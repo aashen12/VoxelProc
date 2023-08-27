@@ -13,6 +13,6 @@
 #   Check Package:             'Cmd + Shift + E'
 #   Test Package:              'Cmd + Shift + T'
 
-goodbye <- function() {
-  print("Goodbye, world!")
+hello2 <- function() {
+  print("hello2, world!")
 }
