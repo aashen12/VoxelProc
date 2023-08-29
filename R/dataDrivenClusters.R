@@ -29,10 +29,10 @@
 #'
 #' @return A tibble with the following components:
 #' \describe{
-#' \item{data_df}, a tibble that includes the original coordinate values,
-#' the embedded UMAP coordinates, and the cluster value of the voxel data.
-#' \item{plot}, a scatterplot of the lower-dimensional UMAP embedding, colored
-#' according to the k-means clustering algorithm.
+#' \item{data_df}{a tibble that includes the original coordinate values,
+#' the embedded UMAP coordinates, and the cluster value of the voxel data.}
+#' \item{plot}{a scatterplot of the lower-dimensional UMAP embedding, colored
+#' according to the k-means clustering algorithm.}
 #' }
 #' @export
 
