@@ -74,13 +74,9 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   colnames(data_df)[4:5] <- c("U1", "U2")
   data_df <- as_tibble(data_df)
 
-  # obtain a dataframe with umap coords and kmeans clusters to make plotting easier
-  plot_df <- as_tibble(data_df[,4:6])
-  colnames(plot_df) <- c("umap_coord_1", "umap_coord_2", "clusters")
-
   if (n_umap == 2) {
     plot <- plot_df %>%
-      ggplot(aes(x = umap_coord_1, y = umap_coord_2, color = factor(clusters))) +
+      ggplot(aes(x = U1, y = U2, color = factor(cluster))) +
       geom_point() +
       theme_bw() +
       labs(x = "UMAP 1", y = "UMAP 2", title = region, color = "Clusters")
