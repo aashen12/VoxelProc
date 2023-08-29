@@ -2,5 +2,5 @@
 
 export(dataDrivenClusters)
 importFrom(irlba,prcomp_irlba)
-importFrom(tidyverse,as_tibble)
+importFrom(tibble,as_tibble)
 importFrom(umap,umap)

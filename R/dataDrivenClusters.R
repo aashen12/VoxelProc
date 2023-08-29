@@ -23,7 +23,7 @@
 #'
 #' @importFrom irlba prcomp_irlba
 #' @importFrom umap umap
-#' @importFrom tidyverse as_tibble
+#' @importFrom tibble as_tibble
 #'
 #' @return A tibble with the following components:
 #' \describe{
