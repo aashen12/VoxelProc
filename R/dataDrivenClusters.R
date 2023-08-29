@@ -24,6 +24,8 @@
 #' @importFrom irlba prcomp_irlba
 #' @importFrom umap umap
 #' @importFrom tibble as_tibble
+#' @import ggplot2
+#' @import dplyr
 #'
 #' @return A tibble with the following components:
 #' \describe{
