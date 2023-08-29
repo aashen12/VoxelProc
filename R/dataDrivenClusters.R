@@ -19,9 +19,9 @@
 #' @param region A \code{character} that indicates which region of the brain the
 #' pipeline will be run on. Default is set to \code{null}.
 #'
-#' @import irlba
-#' @import umap
-#' @import tidyverse
+#' @importFrom irlba prcomp_irlba
+#' @importFrom umap umap
+#' @importFrom tidyverse as_tibble
 #'
 #' @return A tibble with the following components:
 #' \describe{
