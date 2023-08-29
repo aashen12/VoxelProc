@@ -38,8 +38,25 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   #obtain a dataframe with umap coords and kmeans clusters to make plotting easier
 
   plot_df <- as.data.frame(cbind(umap_coords, km$cluster))
-  colnames(plot_df) <- c('umap coord 1', 'umap coord 2', 'clusters')
-  plot <- ggplot(plot_df, aes(x = 'umap coord 1', y = 'umap coord 2', color = 'clusters')) + geom_point()
+  colnames(plot_df) <- c("umap_coord_1", "umap_coord_2", "clusters")
 
-  return(data_df, plot)
+  #creating an if statement in case visualization isn't possible because n_umap > 2
+
+  if (n_umap > 2){
+
+  plot <- ggplot(plot_df, aes(x = umap_coord_1, y = umap_coord_2, color = clusters)) + geom_point()
+
+  result <- list(data_df, plot_df, plot)
+
+  }
+
+  else {
+    print("n_umap > 2, so no visualization is possible")
+  }
+
+  #the return object will consist of two dataframes, data_df and plot_df
+
+  result <- list(data_df, plot_df)
+
+  return(result)
 }
