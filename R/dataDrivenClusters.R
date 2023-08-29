@@ -26,11 +26,13 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
 
   # perform umap
   umap_sim <- umap(rot_data, n_components = n_umap, preserve.seed = TRUE)
+  message("PCA and UMAP completed.")
   umap_coords <- umap_sim$layout
   umap_df <- as.data.frame(umap_coords)
 
   # apply kmeans to umap-reduced data
   km <- kmeans(umap_df, centers = n_clust, iter.max = 5000)
+  message("Clustering completed.")
 
   # obtain the dataframe with xyz coords, UMAP coords, and cluster values
   data_df <- cbind(cbind(xyz, umap_coords), km$cluster)
@@ -41,10 +43,11 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
 
   if (n_umap == 2) {
     plot <- plot_df %>%
-      ggplot(aes(x = umap_coord_1, y = umap_coord_2, color = clusters)) +
+      ggplot(aes(x = umap_coord_1, y = umap_coord_2, color = factor(clusters))) +
       geom_point() +
       theme_bw() +
-      labs(x = "UMAP 1", y = "UMAP 2", title = region)
+      labs(x = "UMAP 1", y = "UMAP 2", title = region, color = "Clusters")
+    # For andy: import DNLI ggplot themes
     result <- list(data_df = data_df, plot = plot)
   }
   else {
