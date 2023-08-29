@@ -66,8 +66,9 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   message("Clustering completed.")
 
   # obtain the dataframe with xyz coords, UMAP coords, and cluster values
-  data_df <- cbind(cbind(xyz, umap_coords), km$cluster)
-  data_df <- as_tibble(data_df)
+  data_df <- data.frame(cbind(xyz, umap_coords), cluster = km$cluster)
+  colnames(data_df[4:5]) <- c("UMAP 1", "UMAP 2")
+  # data_df <- as_tibble(data_df)
 
   # obtain a dataframe with umap coords and kmeans clusters to make plotting easier
   plot_df <- as_tibble(data_df[,4:6])
@@ -84,7 +85,7 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   }
   else {
     print("n_umap is greater than 2, so no visualization is possible")
-    result <- as_tibble(list(data_df = data_df))
+    result <- list(data_df = data_df)
   }
 
   # the return object will consist of two dataframes, data_df and plot_df
