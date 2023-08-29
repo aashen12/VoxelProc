@@ -75,7 +75,7 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   data_df <- as_tibble(data_df)
 
   if (n_umap == 2) {
-    plot <- plot_df %>%
+    plot <- data_df %>%
       ggplot(aes(x = U1, y = U2, color = factor(cluster))) +
       geom_point() +
       theme_bw() +
@@ -88,7 +88,7 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
     result <- list(data_df = data_df)
   }
 
-  # the return object will consist of two dataframes, data_df and plot_df
+  # the return object will consist just data_df
   return(result)
   }
 }
