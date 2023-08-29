@@ -8,4 +8,5 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
                                      region = NULL) {
   # n-resamp: number of subsamples to take
   # subsamp_prop: proportion of subjects to subsample from
+  # for ari, you will need mclust::adjustedRandIndex. please add it to namespace
 }
