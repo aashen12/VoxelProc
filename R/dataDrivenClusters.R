@@ -67,7 +67,7 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
 
   # obtain the dataframe with xyz coords, UMAP coords, and cluster values
   data_df <- data.frame(cbind(xyz, umap_coords), cluster = km$cluster)
-  colnames(data_df[4:5]) <- c("UMAP 1", "UMAP 2")
+  colnames(data_df)[4:5] <- c("UMAP 1", "UMAP 2")
   data_df <- as_tibble(data_df)
 
   # obtain a dataframe with umap coords and kmeans clusters to make plotting easier
