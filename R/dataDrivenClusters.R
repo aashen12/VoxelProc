@@ -24,6 +24,7 @@
 #' @importFrom irlba prcomp_irlba
 #' @importFrom umap umap
 #' @importFrom tibble as_tibble
+#' @importFrom stats kmeans
 #' @import ggplot2
 #' @import dplyr
 #'
