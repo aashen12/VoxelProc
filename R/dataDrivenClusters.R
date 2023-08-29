@@ -1,6 +1,36 @@
+#' @title Data Driven Clusters
+#'
+#' @description \code{dataDrivenClusters()} applies a pipeline of dimensionality
+#' reduction and cluster analysis to a given set of MRI voxel data. First, we
+#' use principal component analysis to embed the data into some lower-dimensional
+#' space. We then apply UMAP to that embedding and reduce it to yet another
+#' smaller dimension. Lastly, k-means clustering is utilized to separate the
+#' embedded voxel data into separate subgroups.
+#'
+#' @param obj A \code{list} or \code{matrix} object that represents voxel data.
+#' The first three columns should be coordinate data, while the rest of the
+#' columns represent voxel data.
+#' @param n_pca A \code{numeric} that indicates how many principal components
+#' will be used in the pipeline. Default is set to 20.
+#' @param n_umap A \code{numeric} that indicates how many umap components will
+#' be used in the pipeline. Default is set to 2.
+#' @param n_clust A \code{numeric} that indicates how many clusters the k-means
+#' algorithm will search for in the pipeline. Default is set to 2.
+#' @param region A \code{character} that indicates which region of the brain the
+#' pipeline will be run on. Default is set to \code{null}.
+#'
 #' @import irlba
 #' @import umap
 #' @import tidyverse
+#'
+#' @return A tibble with the following components:
+#' \describe{
+#' \item{data_df}, a tibble that includes the original coordinate values,
+#' the embedded UMAP coordinates, and the cluster value of the voxel data.
+#' \item{plot}, a scatterplot of the lower-dimensional UMAP embedding, colored
+#' according to the k-means clustering algorithm.
+#' }
+#' @export
 
 
 dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
