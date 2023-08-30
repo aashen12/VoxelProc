@@ -5,9 +5,11 @@
 #' use principal component analysis to embed the data into some lower-dimensional
 #' space. We then apply UMAP to that embedding and reduce it to yet another
 #' smaller dimension. Lastly, k-means clustering is utilized to separate the
-#' embedded voxel data into separate subgroups. Note that $\code{voxel_df}$
+#' embedded voxel data into separate subgroups. Note that \code{voxel_df}
 #' should be a n x p matrix, where n is the number of coordinates in that
-#' particular region of the brain and p is the number of subjects.
+#' particular region of the brain and p is the number of subjects. The first three
+#' columns of \code{voxel_df} should be the 'x', 'y', and 'z' coordinates,
+#' respectively.
 #'
 #' @param voxel_df A \code{list} or \code{matrix} object that represents voxel data.
 #' The first three columns should be coordinate data, while the rest of the
