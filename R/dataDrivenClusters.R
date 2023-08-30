@@ -90,11 +90,12 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   }
 
   # Adding region column
-  if (is.null(region) == FALSE){
+  if (!is.null(region)){
     region_col <- rep(region, nrows(voxel_df))
     result <- cbind(result, region_col)
+    # needs to be fixed
   }
-  else{
+  else {
     result <- result
   }
 
