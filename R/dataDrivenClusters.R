@@ -75,6 +75,15 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   colnames(data_df)[4:5] <- c("U1", "U2")
   data_df <- as_tibble(data_df)
 
+  # Adding region column
+  if (!is.null(region)){
+    region_col <- rep(region, nrow(voxel_df))
+    data_df <- as_tibble(cbind(data_df, region_col))
+  }
+  else {
+    data_df <- data_df
+  }
+
   if (n_umap == 2) {
     plot <- data_df %>%
       ggplot(aes(x = U1, y = U2, color = factor(cluster))) +
@@ -87,16 +96,6 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   else {
     print("n_umap is greater than 2, so no visualization is possible")
     result <- list(data_df = data_df)
-  }
-
-  # Adding region column
-  if (!is.null(region)){
-    region_col <- rep(region, nrows(voxel_df))
-    result <- cbind(result, region_col)
-    # needs to be fixed
-  }
-  else {
-    result <- result
   }
 
   # the return object will consist just data_df
