@@ -41,6 +41,7 @@ test_that(paste("dataDrivenClusters returns data_df as a tibble"),
 test_that(paste("dataDrivenClusters returns the correct result given the
                 specified pipeline"),
           {
+            xyz <- data[,1:3]
             voxel_df <- data[,4:ncol(data)]
             voxel_df <- scale(voxel_df, center=TRUE, scale=TRUE)
             pca <- prcomp_irlba(voxel_df, n = 20, retx = TRUE)
@@ -49,8 +50,12 @@ test_that(paste("dataDrivenClusters returns the correct result given the
             umap_sim <- umap(rot_data, n_components = 2, preserve.seed = TRUE)
             umap_coords <- umap_sim$layout
             umap_df <- as.data.frame(umap_coords)
-            colnames(umap_df) <- c("U1", "U2")
+            km <- kmeans(umap_df, centers = 2, iter.max = 5000)
+            sim_data_df <- data.frame(cbind(xyz, umap_coords), cluster = km$cluster)
+            colnames(sim_data_df)[4:5] <- c("U1", "U2")
+            sim_data_df <- as_tibble(sim_data_df)
 
-            expect_equal(sum(umap_df[1]), sum(result$data_df[,4]))
-            expect_equal(sum(umap_df[2]), sum(result$data_df[,5]))
+
+            expect_equal(sim_data_df[,4], result$data_df[,4])
+            expect_equal(sim_data_df[,5], result$data_df[,5])
           })
