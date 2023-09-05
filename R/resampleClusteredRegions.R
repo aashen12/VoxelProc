@@ -59,6 +59,9 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     # extracting individual values that are off-diagonal
     values <- ARI[col(ARI)!=row(ARI)]
 
+    # setting diags to 1
+    diag(ARI) <- 1
+
     # taking average
     avg <- mean(values)
 
