@@ -41,8 +41,10 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     cluster_vec[,i] <- clusters
   }
 
+    # build matrix of ARI values
   ARI <- matrix(NA, n_resamp, n_resamp)
 
+    # reiterate to find pairwise ARIs
   for (i in 1:n_resamp){
     for (j in c(1:n_resamp)[1:n_resamp != i]) {
       ARI_j <- adjustedRandIndex(cluster_vec[,i], cluster_vec[,j])
@@ -51,11 +53,17 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
   }
 
+    # turning the matrix upper-triangular
+    ARI[lower.tri(ARI)] <- 0
 
-  ARI[lower.tri(ARI)] <- 0
-  values <- ARI[col(ARI)!=row(ARI)]
-  avg <- mean(values)
-  result <- list(Average = avg, Matrix = ARI)
+    # extracting individual values that are off-diagonal
+    values <- ARI[col(ARI)!=row(ARI)]
+
+    # taking average
+    avg <- mean(values)
+
+    # appending to list
+    result <- list(Average = avg, Matrix = ARI)
 
   return(result)
 
