@@ -44,7 +44,7 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
   ARI <- matrix(NA, n_resamp, n_resamp)
 
   for (i in 1:n_resamp){
-    for (j in 1:n_resamp[1:n_resamp != i]) {
+    for (j in c(1:n_resamp)[1:n_resamp != i]) {
       ARI_j <- adjustedRandIndex(cluster_vec[,i], cluster_vec[,j])
       ARI[i,j] <- ARI_j
     }
@@ -52,11 +52,11 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
   }
 
 
-  ARI[lower.tri(mat)] <- 0
+  ARI[lower.tri(ARI)] <- 0
   values <- ARI[col(ARI)!=row(ARI)]
   avg <- mean(values)
   result <- list(Average = avg, Matrix = ARI)
 
-  return(ARI)
+  return(result)
 
 }
