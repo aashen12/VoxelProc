@@ -20,15 +20,16 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
                                    nrow = nrow(voxel_df),
                                    ncol = n_resamp))
 
+  voxel_df_data <- voxel_df[,4:ncol(voxel_df)]
+
+  # extract xyz coords
+  xyz <- voxel_df[,1:3]
+
   # run a for loop to resample and calculate clusters
   for (i in 1:n_resamp){
 
-    # extract xyz coords
-    xyz <- voxel_df[,1:3]
-
     # sample voxel data from voxel_df
-    voxel_df <- voxel_df[,4:ncol(voxel_df)]
-    subsamp <- voxel_df[,sample(ncol(voxel_df), size=num)]
+    subsamp <- voxel_df_data[,sample(ncol(voxel_df_data), size=num)]
 
     # bind xyz back to the subsample
     new_voxel_df <- cbind(xyz, subsamp)
@@ -43,7 +44,7 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
   }
 
     # build matrix of ARI values
-  ARI <- matrix(NA, n_resamp, n_resamp)
+    ARI <- matrix(NA, n_resamp, n_resamp)
 
     # reiterate to find pairwise ARIs
   for (i in 1:n_resamp){
