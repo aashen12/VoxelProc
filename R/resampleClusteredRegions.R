@@ -1,6 +1,7 @@
 # This function resamples the data multiple times and returns an ARI matrix
 # You will need to use your completed dataDrivenClusters code
 #' @importFrom mclust adjustedRandIndex
+#' @export
 
 resampleClusteredRegions <- function(voxel_df, n_pca = 20,
                                      n_umap = 2, n_clust = 2,
