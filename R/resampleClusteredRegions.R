@@ -36,15 +36,16 @@
 #'
 #' @import mclust
 #' @import ggplot2
-#' @importFrom xpectr suppressMessages
 #' @importFrom reshape2 melt
 #'
 #' @return A list with the following components:
 #' \describe{
-#' \item{Average}, the average of the Rand indices that have been recorded for
-#' each pairwise resampling.
-#' \item{Matrix}, a matrix plot that visualizes the pairwise rand indices of the
-#' resamplings.
+#' \item{Average}
+#' {the average of the Rand indices that have been recorded for
+#' each pairwise resampling}
+#' \item{Matrix}
+#' {a matrix plot that visualizes the pairwise rand indices of the
+#' resamplings.}
 #' }
 #'
 #' @export
