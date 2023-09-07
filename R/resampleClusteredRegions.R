@@ -114,7 +114,7 @@ message("Cluster vectors calculated")
 message("Matrix calculated")
 
     # turning the matrix upper-triangular
-    ARI[lower.tri(ARI)] <- 0
+    ARI[upper.tri(ARI)] <- 0
 
     # extracting individual values that are off-diagonal
     values <- ARI[col(ARI)!=row(ARI)]
@@ -134,7 +134,7 @@ message("Matrix calculated")
       labs(x = "Sample #", y = "Sample #")
 
     # appending to list
-    result <- list(Average = avg, Matrix = plot)
+    result <- list(Average = avg, Matrix = plot, Values = ARI)
 
   return(result)
 
