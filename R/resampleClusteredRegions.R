@@ -128,7 +128,7 @@ message("Matrix calculated")
     # plotting matrix
     plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
       geom_tile(color = "white") +
-      geom_text(aes(label = round(value, 2)), color = "white") +
+      geom_text(aes(label = round(value, 2)), color = "black") +
       theme_bw() +
       scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
       labs(x = "Sample #", y = "Sample #")
