@@ -1,7 +1,52 @@
+#' @title resampleClusteredRegions
+#'
+#' @description Tests the stability of the output of \code{dataDrivenClusters()}
+#' by resampling the voxel data set and using the adjusted Rand Index to compare
+#' cluster values.
+#'
+#' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df}
+#' according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
+#' on these parameters, a certain proportion of the columns of \code{voxel_df}
+#' will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
+#' In particular, the resampling will be performed only on columns 4 to \code{ncol(voxel_df)}
+#' of \code{voxel_df}, since the first three columns should be the 'x', 'y',  and 'z'
+#' coordinates. After running \code{dataDrivenClusters} on the subsets, the cluster
+#' labels will be extracted for each resample. \code{resampleClusteringRegions()}
+#' then uses the adjusted Rand Index to find how similar each pair of clusterings are to
+#' each other. The function then averages the pairwise adjusted Rand indices as
+#' a 'score' for how stable the clusterings are. In addition to this a matrix
+#' plot is provided to visualize the pairwise rand indices.
+#'
+#'
+#' @param voxel_df A \code{list} or \code{matrix} object that represents voxel data.
+#' The first three columns should be coordinate data, while the rest of the
+#' columns represent voxel data.
+#' @param n_pca A \code{numeric} that indicates how many principal components
+#' will be used in the pipeline. Default is set to 20.
+#' @param n_umap A \code{numeric} that indicates how many umap components will
+#' be used in the pipeline. Default is set to 2.
+#' @param n_clust A \code{numeric} that indicates how many clusters the k-means
+#' algorithm will search for in the pipeline. Default is set to 2.
+#' @param region A \code{character} that indicates which region of the brain the
+#' pipeline will be run on. Default is set to \code{null}.
+#' @param n_resamp A \code{numeric} that indicates how many times \code{resampleClusteredRegions()}
+#' should resample from \code{vodel_df}.
+#' @param subsamp_prop A \code{numeric} indicating what proportion of \code{voxel_df}
+#' will be resampled at each iteration of \code{resampleClusteredRegions}.
+#'
 #' @import mclust
-#' @import xpectr
 #' @import ggplot2
+#' @importFrom xpectr suppressMessages
 #' @importFrom reshape2 melt
+#'
+#' @return A list with the following components:
+#' \describe{
+#' \item{Average}, the average of the Rand indices that have been recorded for
+#' each pairwise resampling.
+#' \item{Matrix}, a matrix plot that visualizes the pairwise rand indices of the
+#' resamplings.
+#' }
+#'
 #' @export
 
 resampleClusteredRegions <- function(voxel_df, n_pca = 20,
@@ -9,21 +54,15 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
                                      n_resamp = 5,
                                      subsamp_prop = 0.8,
                                      region = NULL) {
+  # failsafes
 
   if (n_umap < 2 || n_pca < 2){
-
     stop("n_umap and n_pca must be greater than 1")
-
   }
-
   else{
-
   if (subsamp_prop == 1){
-
     stop("subsamp_prop must be less than 1")
-
   }
-
   else{
 
   # find the number of columns needed to sample from subsamp_prop
