@@ -36,7 +36,7 @@
 #'
 #' @import mclust
 #' @import ggplot2
-#' @importFrom reshape2 melt
+#' @import reshape2
 #'
 #' @return A list with the following components:
 #' \describe{
