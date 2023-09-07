@@ -94,7 +94,7 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     clusters <- DDC$data_df[, 6]
 
     # append to cluster_vec
-    cluster_vec[,i] <- clusters
+    cluster_vec[, i] <- clusters
   }
 
 message("Cluster vectors calculated")
