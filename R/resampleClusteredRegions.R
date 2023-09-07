@@ -1,6 +1,5 @@
-# This function resamples the data multiple times and returns an ARI matrix
-# You will need to use your completed dataDrivenClusters code
 #' @import mclust
+#' @import xpectr
 #' @export
 
 resampleClusteredRegions <- function(voxel_df, n_pca = 20,
@@ -8,9 +7,22 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
                                      n_resamp = 5,
                                      subsamp_prop = 0.8,
                                      region = NULL) {
-  # n-resamp: number of subsamples to take
-  # subsamp_prop: proportion of subjects to subsample from (floor this)
-  # for ari, you will need mclust::adjustedRandIndex. please add it to namespace
+
+  if (n_umap < 2 || n_pca < 2){
+
+    stop("n_umap and n_pca must be greater than 1")
+
+  }
+
+  else{
+
+  if (subsamp_prop == 1){
+
+    stop("subsamp_prop must be less than 1")
+
+  }
+
+  else{
 
   # find the number of columns needed to sample from subsamp_prop
   num <- floor(ncol(voxel_df[,4:ncol(voxel_df)])*subsamp_prop)
@@ -35,13 +47,15 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     new_voxel_df <- cbind(xyz, subsamp)
 
     # run dataDrivenClusters() with specified values
-    DDC <- dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
-                              n_clust = n_clust, region = region)
+    DDC <- suppressMessages(dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
+                              n_clust = n_clust, region = region))
     clusters <- DDC$data_df[,6]
 
     # append to cluster_vec
     cluster_vec[,i] <- clusters
   }
+
+message("Cluster vectors calculated")
 
     # build matrix of ARI values
     ARI <- matrix(NA, n_resamp, n_resamp)
@@ -54,6 +68,8 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     }
 
   }
+
+message("Matrix calculated")
 
     # turning the matrix upper-triangular
     ARI[lower.tri(ARI)] <- 0
@@ -72,4 +88,6 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
   return(result)
 
+    }
+  }
 }
