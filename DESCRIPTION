@@ -16,6 +16,7 @@ Imports:
   irlba,
   tibble,
   mclust,
+  reshape2,
   umap
 Suggests:
   tidyverse,
