@@ -1,5 +1,7 @@
 #' @import mclust
 #' @import xpectr
+#' @import ggplot2
+#' @importFrom reshape2 melt
 #' @export
 
 resampleClusteredRegions <- function(voxel_df, n_pca = 20,
@@ -83,8 +85,16 @@ message("Matrix calculated")
     # taking average
     avg <- mean(values)
 
+    # plotting matrix
+    plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
+      geom_tile(color = "white") +
+      geom_text(aes(label = round(value, 2)), color = "white") +
+      theme_bw() +
+      scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
+      labs(x = "Sample #", y = "Sample #")
+
     # appending to list
-    result <- list(Average = avg, Matrix = ARI)
+    result <- list(Average = avg, Matrix = plot)
 
   return(result)
 
