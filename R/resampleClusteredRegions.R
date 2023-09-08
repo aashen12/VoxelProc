@@ -29,8 +29,8 @@
 #' algorithm will search for in the pipeline. Default is set to 2.
 #' @param region A \code{character} that indicates which region of the brain the
 #' pipeline will be run on. Default is set to \code{null}.
-#' @param n_resamp A \code{numeric} that indicates how many times \code{resampleClusteredRegions()}
-#' should resample from \code{vodel_df}.
+#' @param n_resamp A \code{numeric} that indicates how many times
+#' \code{resampleClusteredRegions()} should resample from \code{voxel_df}.
 #' @param subsamp_prop A \code{numeric} indicating what proportion of \code{voxel_df}
 #' will be resampled at each iteration of \code{resampleClusteredRegions}.
 #'
@@ -95,6 +95,8 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters
+
+    message(paste0("Cluster ", i, " calculated"))
   }
 
 message("Cluster vectors calculated")
@@ -114,16 +116,16 @@ message("Cluster vectors calculated")
 message("Matrix calculated")
 
     # turning the matrix upper-triangular
-    ARI[upper.tri(ARI)] <- 0
+    ARI[upper.tri(ARI)] <- NA
 
     # extracting individual values that are off-diagonal
-    values <- ARI[col(ARI)!=row(ARI)]
+    values <- ARI[col(ARI) != row(ARI)]
 
     # setting diags to 1
     diag(ARI) <- 1
 
     # taking average
-    avg <- mean(values)
+    avg <- mean(values[!is.na(values) & values != 1])
 
     # plotting matrix
     plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
@@ -131,7 +133,9 @@ message("Matrix calculated")
       geom_text(aes(label = round(value, 2)), color = "black") +
       theme_bw() +
       scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
-      labs(x = "Sample #", y = "Sample #")
+      labs(x = "Sample #", y = "Sample #",
+           title = "ARI Matrix",
+           subtitle = paste0("average = ", avg))
 
     # appending to list
     result <- list(average = avg, matrix = plot, values = ARI)
