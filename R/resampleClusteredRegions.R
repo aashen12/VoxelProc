@@ -40,11 +40,9 @@
 #'
 #' @return A list with the following components:
 #' \describe{
-#' \item{Average}
-#' {the average of the Rand indices that have been recorded for
+#' \item{Average}{the average of the Rand indices that have been recorded for
 #' each pairwise resampling}
-#' \item{Matrix}
-#' {a matrix plot that visualizes the pairwise rand indices of the
+#' \item{Matrix}{a matrix plot that visualizes the pairwise rand indices of the
 #' resamplings.}
 #' }
 #'
@@ -99,7 +97,7 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     message(paste0("Cluster ", i, " calculated"))
   }
 
-message("Cluster vectors calculated")
+  message("Cluster vectors calculated")
 
     # build matrix of ARI values
     ARI <- matrix(NA, n_resamp, n_resamp)
@@ -113,7 +111,7 @@ message("Cluster vectors calculated")
 
   }
 
-message("Matrix calculated")
+  message("Matrix calculated")
 
     # turning the matrix upper-triangular
     ARI[upper.tri(ARI)] <- NA
@@ -130,12 +128,14 @@ message("Matrix calculated")
     # plotting matrix
     plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
       geom_tile(color = "white") +
-      geom_text(aes(label = round(value, 2)), color = "black") +
+      geom_text(aes(label = round(value, 2), fontface = "bold"), color = "black") +
       theme_bw() +
       scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
       labs(x = "Sample #", y = "Sample #",
            title = "ARI Matrix",
-           subtitle = paste0("average = ", avg))
+           subtitle = paste0("average = ", avg)) +
+      theme(plot.title = element_text(face = "bold"))
+
 
     # appending to list
     result <- list(average = avg, matrix = plot, values = ARI)
