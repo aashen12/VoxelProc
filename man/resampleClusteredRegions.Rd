@@ -40,11 +40,9 @@ pipeline will be run on. Default is set to \code{null}.}
 \value{
 A list with the following components:
 \describe{
-\item{Average}
-{the average of the Rand indices that have been recorded for
+\item{Average}{the average of the Rand indices that have been recorded for
 each pairwise resampling}
-\item{Matrix}
-{a matrix plot that visualizes the pairwise rand indices of the
+\item{Matrix}{a matrix plot that visualizes the pairwise rand indices of the
 resamplings.}
 }
 }
