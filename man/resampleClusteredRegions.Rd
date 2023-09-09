@@ -28,8 +28,8 @@ be used in the pipeline. Default is set to 2.}
 \item{n_clust}{A \code{numeric} that indicates how many clusters the k-means
 algorithm will search for in the pipeline. Default is set to 2.}
 
-\item{n_resamp}{A \code{numeric} that indicates how many times \code{resampleClusteredRegions()}
-should resample from \code{vodel_df}.}
+\item{n_resamp}{A \code{numeric} that indicates how many times
+\code{resampleClusteredRegions()} should resample from \code{voxel_df}.}
 
 \item{subsamp_prop}{A \code{numeric} indicating what proportion of \code{voxel_df}
 will be resampled at each iteration of \code{resampleClusteredRegions}.}
