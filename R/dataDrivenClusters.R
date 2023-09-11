@@ -1,13 +1,8 @@
 #' @title Data Driven Clusters
 #'
 #' @description \code{dataDrivenClusters()} applies a pipeline of dimensionality
-#' reduction and cluster analysis to a given set of MRI voxel data. First, we
-#' use principal component analysis to embed the data into some lower-dimensional
-#' space. We then apply UMAP to that embedding and reduce it to yet another
-#' smaller dimension. Lastly, k-means clustering is utilized to separate the
-#' embedded voxel data into separate subgroups. Note that $\code{voxel_df}$
-#' should be a n x p matrix, where n is the number of coordinates in that
-#' particular region of the brain and p is the number of subjects.
+#' reduction and cluster analysis in hopes of isolating signals of interest in
+#' high-dimensional MRI voxel data.
 #'
 #' @param voxel_df A \code{list} or \code{matrix} object that represents voxel data.
 #' The first three columns should be coordinate data, while the rest of the
@@ -21,18 +16,30 @@
 #' @param region A \code{character} that indicates which region of the brain the
 #' pipeline will be run on. Default is set to \code{null}.
 #'
+#' @details The pipeline uses two layers of dimensionality reduction in
+#' order to isolate signals of interest in high-dimensional voxel data. The first
+#' layer, PCA, will embed the data into a smaller but still non-visualizable
+#' space. The second layer, UMAP, will embed this data into a space specified by
+#' the user. The default for this is the visualizable 2D space. Lastly, k-means
+#' is used to algorithmically determine where the various clusters lie. The
+#' argument \code{voxel_df} must be a n x p matrix, where p is the number of
+#' subjects. The first three columns should consist of the coordinates 'x', 'y',
+#' and 'z', respectively, representing the location of the given voxels in the
+#' brain. The pipeline runs on the voxel data, not on the coordinates.
+#'
 #' @importFrom irlba prcomp_irlba
 #' @importFrom umap umap
 #' @importFrom tibble as_tibble
+#' @importFrom stats kmeans
 #' @import ggplot2
 #' @import dplyr
 #'
 #' @return A tibble with the following components:
 #' \describe{
-#' \item{data_df}, a tibble that includes the original coordinate values,
-#' the embedded UMAP coordinates, and the cluster value of the voxel data.
-#' \item{plot}, a scatterplot of the lower-dimensional UMAP embedding, colored
-#' according to the k-means clustering algorithm.
+#' \item{data_df}{a tibble that includes the original coordinate values,
+#' the embedded UMAP coordinates, and the cluster value of the voxel data.}
+#' \item{plot}{a scatterplot of the lower-dimensional UMAP embedding, colored
+#' according to the k-means clustering algorithm.}
 #' }
 #' @export
 
@@ -73,6 +80,15 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
   data_df <- data.frame(cbind(xyz, umap_coords), cluster = km$cluster)
   colnames(data_df)[4:5] <- c("U1", "U2")
   data_df <- as_tibble(data_df)
+
+  # Adding region column
+  if (!is.null(region)){
+    region_col <- rep(region, nrow(voxel_df))
+    data_df <- as_tibble(cbind(data_df, region_col))
+  }
+  else {
+    data_df <- data_df
+  }
 
   if (n_umap == 2) {
     plot <- data_df %>%
