@@ -1,10 +1,10 @@
-
+#' @title computeTailMeans()
 
 computeTailMeans <- function(voxel_df, data_df, alpha) {
 
   #assuming long format data
   combine_df <- cbind(voxel_df, data_df)
-  combind_df <- combine_df[, c(1, 2, 3, 4, 5, 11)]
+  combind_df <- combine_df[, c(2, 3, 4, 5, 6, 12)]
   combine_df <- combine_df %>% mutate(xyz = paste0(combine_df[, 1],", ",combine_df[, 2],", ",combine_df[, 3]))
   combine_df <- combine_df[, c(1, 5, 6, 7)]
 
