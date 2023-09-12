@@ -37,6 +37,7 @@
 #' @import mclust
 #' @import ggplot2
 #' @import reshape2
+#' @import foreach
 #'
 #' @return A list with the following components:
 #' \describe{
