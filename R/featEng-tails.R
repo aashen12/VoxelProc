@@ -110,48 +110,48 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
   }
 
-  else {
+    else {
 
-    new_df <- voxel_df[, c(2:6)]
+      new_df <- voxel_df[, c(2:6)]
 
-    PID_vec <- c()
-    lower_mean_vec <- c()
-    upper_mean_vec <- c()
-    lower_quantile_vec <- c()
-    upper_quantile_vec <- c()
+      PID_vec <- c()
+      lower_mean_vec <- c()
+      upper_mean_vec <- c()
+      lower_quantile_vec <- c()
+      upper_quantile_vec <- c()
 
-    for (ID in unique(new_df[, 1])) {
-      # filter the dataframe so that we are only considering individual PIDs
-      uniqueid_df <- new_df %>% filter(pid == ID)
+      for (ID in unique(new_df[, 1])) {
+        # filter the dataframe so that we are only considering individual PIDs
+        uniqueid_df <- new_df %>% filter(pid == ID)
 
-      # find quantile cutoffs
-      quantile_cutoff_lower <- quantile(uniqueid_df[, 5], alpha)
-      quantile_cutoff_upper <- quantile(uniqueid_df[, 5], 1-alpha)
+        # find quantile cutoffs
+        quantile_cutoff_lower <- quantile(uniqueid_df[, 5], alpha)
+        quantile_cutoff_upper <- quantile(uniqueid_df[, 5], 1-alpha)
 
-      # find values that fall beneath and above quantile cutoffs
-      values_lower <- uniqueid_df[, 5][which(uniqueid_df[, 5] < quantile_cutoff_lower)]
-      values_upper <- uniqueid_df[, 5][which(uniqueid_df[, 5] > quantile_cutoff_upper)]
+        # find values that fall beneath and above quantile cutoffs
+        values_lower <- uniqueid_df[, 5][which(uniqueid_df[, 5] < quantile_cutoff_lower)]
+        values_upper <- uniqueid_df[, 5][which(uniqueid_df[, 5] > quantile_cutoff_upper)]
 
-      # finding averages
-      mean_lower <- mean(values_lower)
-      mean_upper <- mean(values_upper)
+        # finding averages
+        mean_lower <- mean(values_lower)
+        mean_upper <- mean(values_upper)
 
-      # appending all values into a vector
-      PID_vec <- c(PID_vec, ID)
-      lower_mean_vec <- c(lower_mean_vec, mean_lower)
-      upper_mean_vec <- c(upper_mean_vec, mean_upper)
-      lower_quantile_vec <- c(lower_quantile_vec, quantile_cutoff_lower)
-      upper_quantile_vec <- c(upper_quantile_vec, quantile_cutoff_upper)
+        # appending all values into a vector
+        PID_vec <- c(PID_vec, ID)
+        lower_mean_vec <- c(lower_mean_vec, mean_lower)
+        upper_mean_vec <- c(upper_mean_vec, mean_upper)
+        lower_quantile_vec <- c(lower_quantile_vec, quantile_cutoff_lower)
+        upper_quantile_vec <- c(upper_quantile_vec, quantile_cutoff_upper)
 
-    }
+      }
 
-    # putting all results into dataframe
-    result <- data.frame(PID = PID_vec,
+      # putting all results into dataframe
+      result <- data.frame(PID = PID_vec,
                           LowerMean = lower_mean_vec,
                           UpperMean = upper_mean_vec,
                           LowerQuantile = lower_quantile_vec,
                           UpperQuantile = upper_quantile_vec)
-    }
+      }
 
   }
 
