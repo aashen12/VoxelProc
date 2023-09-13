@@ -41,6 +41,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
   if (alpha != 0 & alpha != 1) {
 
   if (!is.null(data_df)) {
+
   # cbind voxel_df and data_df
   combine_df <- cbind(voxel_df, data_df)
 
@@ -67,7 +68,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
   for (i in 1:num_clusts) {
 
     # isolating individual clusters
-    filtered_df <- combine_df %>% filter(Cluster == i)
+    filtered_df <- combine_df %>% filter(cluster == i)
 
     # for each cluster, isolate individual PID
     for(ID in unique(combine_df[, 1])) {
