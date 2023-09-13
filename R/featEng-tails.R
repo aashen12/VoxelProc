@@ -161,6 +161,6 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
   }
 
-  return(result)
+return(result)
 
 }
