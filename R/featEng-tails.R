@@ -1,7 +1,26 @@
 #' @title computeTailMeans()
+#'
+#' @description Computes the means of the two-sided alpha-percentile tails of
+#' each individual patient stratified on each individual cluster.
+#'
+#' @param voxel_df A \code{dataframe} in the following format: the first column
+#' is assumed to be an index column counting from 1 to \code{nrow(voxel_df)},
+#' and the second column is a column labeled "PID," which contains patient
+#' identification. The third, fourth, and fifth columns are 'x', 'y', and 'z'
+#' columns. The sixth column contains the value of the voxel that corresponds
+#' with the given x-y-z coordinate.
+#' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
+#' This tibble should be in the following format: the first three columns are
+#' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
+#' UMAP coordinates, and the fifth column contains cluster labels. If this is
+#' equal to \code{null}, \code{computeTailMeans()} will assume that all data comes
+#' from the same cluster.
+#' @param @alpha A \code{double} that indicates what quantiles should be extracted
+#' from the patient data. The lower the number, the tighter the tail will be.
+#'
 #' @export
 
-computeTailMeans <- function(voxel_df, data_df = NULL, alpha) {
+computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
   # assuming long format voxel_df in which column 1 is index, column 2 is PID,
   # column 3-5 is x,y,z, and column 6 is value. Assuming data_df to be output
@@ -55,6 +74,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha) {
       mean_lower <- mean(values_lower)
       mean_upper <- mean(values_upper)
 
+      # appending all values into a vector
       clust_vec <- c(clust_vec, i)
       PID_vec <- c(PID_vec, ID)
       lower_mean_vec <- c(lower_mean_vec, mean_lower)
@@ -65,6 +85,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha) {
     }
   }
 
+  # putting all results into a dataframe
   result <- data.frame(PID = PID_vec,
                        Cluster = clust_vec,
                        LowerMean = lower_mean_vec,
@@ -100,6 +121,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha) {
         mean_lower <- mean(values_lower)
         mean_upper <- mean(values_upper)
 
+        # appending all values into a vector
         PID_vec <- c(PID_vec, ID)
         lower_mean_vec <- c(lower_mean_vec, mean_lower)
         upper_mean_vec <- c(upper_mean_vec, mean_upper)
@@ -107,6 +129,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha) {
         upper_quantile_vec <- c(upper_quantile_vec, quantile_cutoff_upper)
       }
 
+      # putting all results into dataframe
       result <- data.frame(PID = PID_vec,
                            LowerMean = lower_mean_vec,
                            UpperMean = upper_mean_vec,
