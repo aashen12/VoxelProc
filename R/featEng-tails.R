@@ -3,6 +3,17 @@
 #' @description Computes the means of the two-sided alpha-percentile tails of
 #' each individual patient stratified on each individual cluster.
 #'
+#' @details \code{computeTailMeans()} finds the mean of the alpha-percentile tails
+#' of each individual patient through the following steps: first, the function
+#' extracts the 'PID,', 'x', 'y', 'z', 'value,' and 'cluster' columns from
+#' \code{voxel_df} and \code{data_df}. We run \code{cbind} to combine these specific
+#' columns. Following this, we isolate each individual cluster label and then
+#' extract each individual PID. With each individual patient, we then find the
+#' upper and lower alpha-percentile cutoffs, before finding the means of the
+#' values that lie above and below those cutoffs, respectively. We then collect
+#' these results and put them into a dataframe. If \code{data_df} is not specified,
+#' then the function will assume that all of the data comes from a single cluster.
+#'
 #' @param voxel_df A \code{dataframe} in the following format: the first column
 #' is assumed to be an index column counting from 1 to \code{nrow(voxel_df)},
 #' and the second column is a column labeled "PID," which contains patient
@@ -26,6 +37,8 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
   # column 3-5 is x,y,z, and column 6 is value. Assuming data_df to be output
   # from dataDrivenClusters(), in which columns 1-3 are x,y,z, column 4-5 are
   # UMAP coords, and column 6 is cluster labels.
+
+  if (alpha != 0 & alpha != 1) {
 
   if (!is.null(data_df)) {
   # cbind voxel_df and data_df
@@ -136,6 +149,12 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                            LowerQuantile = lower_quantile_vec,
                            UpperQuantile = upper_quantile_vec)
 
+  }
+
+  }
+
+  else {
+    stop("alpha cannot be 0 or 1")
   }
 
 

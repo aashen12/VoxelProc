@@ -4,7 +4,7 @@
 \alias{computeTailMeans}
 \title{computeTailMeans()}
 \usage{
-computeTailMeans(voxel_df, data_df = NULL, alpha)
+computeTailMeans(voxel_df, data_df = NULL, alpha = 0.05)
 }
 \arguments{
 \item{voxel_df}{A \code{dataframe} in the following format: the first column
@@ -21,10 +21,22 @@ UMAP coordinates, and the fifth column contains cluster labels. If this is
 equal to \code{null}, \code{computeTailMeans()} will assume that all data comes
 from the same cluster.}
 
-\item{@alpha}{A \code{double} that indicates what quantiles should be extracted
+\item{alpha}{A \code{double} that indicates what quantiles should be extracted
 from the patient data. The lower the number, the tighter the tail will be.}
 }
 \description{
 Computes the means of the two-sided alpha-percentile tails of
 each individual patient stratified on each individual cluster.
+}
+\details{
+\code{computeTailMeans()} finds the mean of the alpha-percentile tails
+of each individual patient through the following steps: first, the function
+extracts the 'PID,', 'x', 'y', 'z', 'value,' and 'cluster' columns from
+\code{voxel_df} and \code{data_df}. We run \code{cbind} to combine these specific
+columns. Following this, we isolate each individual cluster label and then
+extract each individual PID. With each individual patient, we then find the
+upper and lower alpha-percentile cutoffs, before finding the means of the
+values that lie above and below those cutoffs, respectively. We then collect
+these results and put them into a dataframe. If \code{data_df} is not specified,
+then the function will assume that all of the data comes from a single cluster.
 }
