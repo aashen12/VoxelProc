@@ -57,12 +57,12 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       num_clusts <- length(unique(combine_df[, 2]))
 
       # initializing empty vectors
-      clust_vec <- c()
-      PID_vec <- c()
-      lower_mean_vec <- c()
-      upper_mean_vec <- c()
-      lower_quantile_vec <- c()
-      upper_quantile_vec <- c()
+      clust_vec <- rep(NA, num_clusts)
+        PID_vec <-
+        lower_mean_vec <-
+        upper_mean_vec <-
+        lower_quantile_vec <-
+        upper_quantile_vec <- rep(NA, length(unique(combine_df[,1])))
 
       # cycling through each cluster label
       for (i in 1:num_clusts) {
@@ -71,7 +71,8 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         filtered_df <- combine_df %>% filter(cluster == i)
 
           # for each cluster, isolate individual PID
-          for(ID in unique(combine_df[, 1])) {
+          for(j in seq_along(unique(combine_df[,1]))) {
+          ID <- unique(combine_df[,1])[j]
 
           # filter the dataframe so that we are only considering individual PIDs
           uniqueid_df <- filtered_df %>% filter(pid == ID)
@@ -89,12 +90,12 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
           mean_upper <- mean(values_upper)
 
           # appending all values into a vector
-          clust_vec <- c(clust_vec, i)
-          PID_vec <- c(PID_vec, ID)
-          lower_mean_vec <- c(lower_mean_vec, mean_lower)
-          upper_mean_vec <- c(upper_mean_vec, mean_upper)
-          lower_quantile_vec <- c(lower_quantile_vec, quantile_cutoff_lower)
-          upper_quantile_vec <- c(upper_quantile_vec, quantile_cutoff_upper)
+          clust_vec[i] <- i
+          PID_vec[j] <- ID
+          lower_mean_vec[j] <- mean_lower
+          upper_mean_vec[j] <- mean_upper
+          lower_quantile_vec[j] <- quantile_cutoff_lower
+          upper_quantile_vec[j] <- quantile_cutoff_upper
 
           }
 
@@ -114,13 +115,16 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
       new_df <- voxel_df[, c(2:6)]
 
-      PID_vec <- c()
-      lower_mean_vec <- c()
-      upper_mean_vec <- c()
-      lower_quantile_vec <- c()
-      upper_quantile_vec <- c()
+      PID_vec <-
+        lower_mean_vec <-
+        upper_mean_vec <-
+        lower_quantile_vec <-
+        upper_quantile_vec <- rep(NA, length(unique(new_df[,1])))
 
-      for (ID in unique(new_df[, 1])) {
+      for (i in seq_along(unique(new_df[,1]))) {
+
+        ID <- unique(new_df[,1])[i]
+
         # filter the dataframe so that we are only considering individual PIDs
         uniqueid_df <- new_df %>% filter(pid == ID)
 
@@ -137,11 +141,11 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         mean_upper <- mean(values_upper)
 
         # appending all values into a vector
-        PID_vec <- c(PID_vec, ID)
-        lower_mean_vec <- c(lower_mean_vec, mean_lower)
-        upper_mean_vec <- c(upper_mean_vec, mean_upper)
-        lower_quantile_vec <- c(lower_quantile_vec, quantile_cutoff_lower)
-        upper_quantile_vec <- c(upper_quantile_vec, quantile_cutoff_upper)
+        PID_vec[i] <- ID
+        lower_mean_vec[i] <- mean_lower
+        upper_mean_vec[i] <- mean_upper
+        lower_quantile_vec[i] <- quantile_cutoff_lower
+        upper_quantile_vec[i] <- quantile_cutoff_upper
 
       }
 
