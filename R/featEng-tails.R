@@ -115,11 +115,18 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
       new_df <- voxel_df[, c(2:6)]
 
-      PID_vec <-
-        lower_mean_vec <-
-        upper_mean_vec <-
         lower_quantile_vec <-
         upper_quantile_vec <- rep(NA, length(unique(new_df[,1])))
+
+      upper_summary <- new_df %>%
+        group_by(pid) %>%
+        top_frac(alpha) %>%
+        summarise(mean_upper = mean(value))
+
+      lower_summary <- new_df %>%
+        group_by(pid) %>%
+        top_frac(-alpha) %>%
+        summarise(mean_lower = mean(value))
 
       for (i in seq_along(unique(new_df[,1]))) {
 
@@ -132,29 +139,15 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         quantile_cutoff_lower <- quantile(uniqueid_df[, 5], alpha)
         quantile_cutoff_upper <- quantile(uniqueid_df[, 5], 1-alpha)
 
-        # find values that fall beneath and above quantile cutoffs
-        values_lower <- uniqueid_df[, 5][which(uniqueid_df[, 5] < quantile_cutoff_lower)]
-        values_upper <- uniqueid_df[, 5][which(uniqueid_df[, 5] > quantile_cutoff_upper)]
-
-        # finding averages
-        mean_lower <- mean(values_lower)
-        mean_upper <- mean(values_upper)
-
-        # appending all values into a vector
-        PID_vec[i] <- ID
-        lower_mean_vec[i] <- mean_lower
-        upper_mean_vec[i] <- mean_upper
         lower_quantile_vec[i] <- quantile_cutoff_lower
         upper_quantile_vec[i] <- quantile_cutoff_upper
 
       }
 
       # putting all results into dataframe
-      result <- data.frame(PID = PID_vec,
-                          LowerMean = lower_mean_vec,
-                          UpperMean = upper_mean_vec,
-                          LowerQuantile = lower_quantile_vec,
-                          UpperQuantile = upper_quantile_vec)
+      result <- cbind(cbind(upper_summary, lower_summary)[,c(1,2,4)],
+                      cbind(lower_quantile_vec, upper_quantile_vec))
+
       }
 
   }
