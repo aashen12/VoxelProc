@@ -48,8 +48,6 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
 
-      num_clusts <- length(unique(combine_df["cluster"]))
-
       iterated_df <- data.frame(pid = NA,
                                 mean_upper = NA,
                                 upper_quantile = NA,
@@ -57,30 +55,17 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                                 lower_quantile = NA,
                                 cluster = NA)
 
-        upper_summary <- cbind(combine_df %>%
+        quantile_summary <- combine_df %>%
           group_by(pid, cluster) %>%
-          summarise(upper_quantile = quantile(value, 1-alpha)),
-          combine_df %>%
-            group_by(pid, cluster) %>%
-            top_frac(alpha) %>%
-            summarise(mean_upper = mean(value))
-        )
+          summarise(upper_quantile = quantile(value, 1-alpha), lower_quantile = quantile(value, alpha))
 
-        lower_summary <- cbind(combine_df %>%
+
+        mean_summary <- combine_df %>%
           group_by(pid, cluster) %>%
-          summarise(lower_quantile = quantile(value, alpha)),
-          combine_df %>%
-            group_by(pid, cluster) %>%
-            top_frac(-alpha) %>%
-            summarise(mean_upper = mean(value))
-        )
+          summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
+                    mean_lower = mean(value[value < quantile(value, alpha)]))[c("mean_upper", "mean_lower")]
 
-        result <- cbind(upper_summary, lower_summary)[c("pid",
-                                                        "cluster",
-                                                        "mean_upper",
-                                                        "upper_quantile",
-                                                        "mean_lower",
-                                                        "lower_quantile")]
+        result <- cbind(quantile_summary, mean_summary)
   }
 
     else {
