@@ -120,17 +120,10 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
       # putting all results into dataframe
       result <- cbind(upper_summary, lower_summary)[,c(1, 2, 4, 6, 8)]
-
       }
-
   }
-
   else {
-
     stop("alpha cannot be 0 or 1")
-
   }
-
-return(result)
-
+  return(result)
 }
