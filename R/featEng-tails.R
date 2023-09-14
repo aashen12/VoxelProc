@@ -54,15 +54,14 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[, c(1, 5, 6, 7)]
 
-      num_clusts <- length(unique(combine_df[, 2]))
+      num_clusts <- length(unique(combine_df[, 3]))
 
-      # initializing empty vectors
-      clust_vec <- rep(NA, num_clusts)
-        PID_vec <-
-        lower_mean_vec <-
-        upper_mean_vec <-
-        lower_quantile_vec <-
-        upper_quantile_vec <- rep(NA, length(unique(combine_df[,1])))
+      iterated_df <- data.frame(pid = NA,
+                                mean_upper = NA,
+                                upper_quantile = NA,
+                                mean_lower = NA,
+                                lower_quantile = NA,
+                                cluster = NA)
 
       # cycling through each cluster label
       for (i in 1:num_clusts) {
@@ -70,53 +69,36 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         # isolating individual clusters
         filtered_df <- combine_df %>% filter(cluster == i)
 
-          # for each cluster, isolate individual PID
-          for(j in seq_along(unique(combine_df[,1]))) {
-          ID <- unique(combine_df[,1])[j]
+        upper_summary <- cbind(filtered_df %>%
+          group_by(pid) %>%
+          top_frac(alpha) %>%
+          summarise(mean_upper = mean(value)),
+            filtered_df %>%
+            group_by(pid) %>%
+            summarise(upper_quantile = quantile(value, 1-alpha))
+          )
 
-          # filter the dataframe so that we are only considering individual PIDs
-          uniqueid_df <- filtered_df %>% filter(pid == ID)
+        lower_summary <- cbind(filtered_df %>%
+          group_by(pid) %>%
+          top_frac(-alpha) %>%
+          summarise(mean_lower = mean(value)),
+            filtered_df %>%
+            group_by(pid) %>%
+            summarise(lower_quantile = quantile(value, alpha), cluster = cluster)
+          )
 
-          # find quantile cutoffs
-          quantile_cutoff_lower <- quantile(uniqueid_df[, 3], alpha)
-          quantile_cutoff_upper <- quantile(uniqueid_df[, 3], 1-alpha)
-
-          # find values that fall beneath and above quantile cutoffs
-          values_lower <- uniqueid_df[, 3][which(uniqueid_df[, 3] < quantile_cutoff_lower)]
-          values_upper <- uniqueid_df[, 3][which(uniqueid_df[, 3] > quantile_cutoff_upper)]
-
-          # finding averages
-          mean_lower <- mean(values_lower)
-          mean_upper <- mean(values_upper)
-
-          # appending all values into a vector
-          clust_vec[i] <- i
-          PID_vec[j] <- ID
-          lower_mean_vec[j] <- mean_lower
-          upper_mean_vec[j] <- mean_upper
-          lower_quantile_vec[j] <- quantile_cutoff_lower
-          upper_quantile_vec[j] <- quantile_cutoff_upper
-
-          }
+        new_df <- cbind(upper_summary, lower_summary)[, c(1, 2, 4, 6, 8, 9)]
+        iterated_df <- rbind(iterated_df, new_df)
 
         }
 
-      # putting all results into a dataframe
-      result <- data.frame(PID = PID_vec,
-                       Cluster = clust_vec,
-                       LowerMean = lower_mean_vec,
-                       UpperMean = upper_mean_vec,
-                       LowerQuantile = lower_quantile_vec,
-                       UpperQuantile = upper_quantile_vec)
+    result <- iterated_df[2:nrow(iterated_df), ]
 
   }
 
     else {
 
       new_df <- voxel_df[, c(2:6)]
-
-        lower_quantile_vec <-
-        upper_quantile_vec <- rep(NA, length(unique(new_df[,1])))
 
       upper_summary <- cbind(new_df %>%
         group_by(pid) %>%
@@ -126,8 +108,6 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
           group_by(pid) %>%
           summarise(upper_quantile = quantile(value, 1-alpha))
       )
-
-
 
       lower_summary <- cbind(new_df %>%
         group_by(pid) %>%
