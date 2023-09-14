@@ -118,20 +118,28 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         lower_quantile_vec <-
         upper_quantile_vec <- rep(NA, length(unique(new_df[,1])))
 
-      upper_summary <- new_df %>%
+      upper_summary <- cbind(new_df %>%
         group_by(pid) %>%
         top_frac(alpha) %>%
-        summarise(mean_upper = mean(value),
-                  upper_quantile = quantile(value, 1-alpha))
+        summarise(mean_upper = mean(value)),
+        new_df %>%
+          group_by(pid) %>%
+          summarise(upper_quantile = quantile(value, 1-alpha))
+      )
 
-      lower_summary <- new_df %>%
+
+
+      lower_summary <- cbind(new_df %>%
         group_by(pid) %>%
         top_frac(-alpha) %>%
-        summarise(mean_lower = mean(value),
-                  lower_quantile = quantile(value, alpha))
+        summarise(mean_lower = mean(value)),
+        new_df %>%
+          group_by(pid) %>%
+          summarise(lower_quantile = quantile(value, alpha))
+      )
 
       # putting all results into dataframe
-      result <- cbind(upper_summary, lower_summary)[,c(1,2,3,5,6)]
+      result <- cbind(upper_summary, lower_summary)[,c(1, 2, 4, 6, 8)]
 
       }
 
