@@ -57,41 +57,30 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                                 lower_quantile = NA,
                                 cluster = NA)
 
-      # cycling through each cluster label
-      for (i in 1:num_clusts) {
+        upper_summary <- cbind(combine_df %>%
+          group_by(pid, cluster) %>%
+          summarise(upper_quantile = quantile(value, 1-alpha)),
+          combine_df %>%
+            group_by(pid, cluster) %>%
+            top_frac(alpha) %>%
+            summarise(mean_upper = mean(values))
+        )
 
-        # isolating individual clusters
-        filtered_df <- combine_df %>% filter(cluster == i)
+        lower_summary <- cbind(combine_df %>%
+          group_by(pid, cluster) %>%
+          summarise(lower_quantile = quantile(value, alpha)),
+          combine_df %>%
+            group_by(pid, cluster) %>%
+            top_frac(-alpha) %>%
+            summarise(mean_upper = mean(values))
+        )
 
-        upper_summary <- cbind(filtered_df %>%
-          group_by(pid) %>%
-          top_frac(alpha) %>%
-          summarise(mean_upper = mean(value)),
-            filtered_df %>%
-            group_by(pid) %>%
-            summarise(upper_quantile = quantile(value, 1-alpha))
-          )
-
-        lower_summary <- cbind(filtered_df %>%
-          group_by(pid) %>%
-          top_frac(-alpha) %>%
-          summarise(mean_lower = mean(value)),
-            filtered_df %>%
-            group_by(pid) %>%
-            summarise(lower_quantile = quantile(value, alpha), cluster = cluster)
-          )
-
-        new_df <- cbind(upper_summary, lower_summary)[c("pid",
-                                                          "mean_upper",
-                                                          "upper_quantile",
-                                                          "mean_lower",
-                                                          "lower_quantile",
-                                                          "cluster")]
-        iterated_df <- rbind(iterated_df, new_df)
-        }
-
-    result <- as_tibble(iterated_df[2:nrow(iterated_df), ])
-
+        result <- cbind(upper_summary, lower_summary)[c("pid",
+                                                        "cluster",
+                                                        "mean_upper",
+                                                        "upper_quantile",
+                                                        "mean_lower",
+                                                        "lower_quantile")]
   }
 
     else {
