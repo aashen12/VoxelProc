@@ -45,9 +45,6 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       # cbind voxel_df and data_df
       combine_df <- cbind(voxel_df, data_df[, 4:6])
 
-      # extracting the columns in following order: PID, x, y, z, Value, Cluster
-      combind_df <- combine_df[c("pid", "x", "y", "z", "value", "cluster")]
-
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
 
