@@ -43,18 +43,15 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
     if (!is.null(data_df)) {
 
       # cbind voxel_df and data_df
-      combine_df <- cbind(voxel_df, data_df)
+      combine_df <- cbind(voxel_df, data_df[, 4:6])
 
       # extracting the columns in following order: PID, x, y, z, Value, Cluster
-      combind_df <- combine_df[, c(2, 3, 4, 5, 6, 12)]
-
-      # adding additional xyz identifier column
-      combine_df <- combine_df %>% mutate(xyz = paste0(combine_df[, 1],", ",combine_df[, 2],", ",combine_df[, 3]))
+      combind_df <- combine_df[c("pid", "x", "y", "z", "value", "cluster")]
 
       #removing x, y, z columns since those are redundant after the xyz column.
-      combine_df <- combine_df[, c(1, 5, 6, 7)]
+      combine_df <- combine_df[c("pid", "value", "cluster")]
 
-      num_clusts <- length(unique(combine_df[, 3]))
+      num_clusts <- length(unique(combine_df["cluster"]))
 
       iterated_df <- data.frame(pid = NA,
                                 mean_upper = NA,
@@ -87,7 +84,12 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
             summarise(lower_quantile = quantile(value, alpha), cluster = cluster)
           )
 
-        new_df <- cbind(upper_summary, lower_summary)[, c(1, 2, 4, 6, 8, 9)]
+        new_df <- cbind(upper_summary, lower_summary)[, c("pid",
+                                                          "mean_upper",
+                                                          "upper_quantile",
+                                                          "mean_lower",
+                                                          "lower_quantile",
+                                                          "cluster")]
         iterated_df <- rbind(iterated_df, new_df)
 
         }
@@ -98,7 +100,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
     else {
 
-      new_df <- voxel_df[, c(2:6)]
+      new_df <- voxel_df[c("pid", "value")]
 
       upper_summary <- cbind(new_df %>%
         group_by(pid) %>%
@@ -119,7 +121,11 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       )
 
       # putting all results into dataframe
-      result <- cbind(upper_summary, lower_summary)[,c(1, 2, 4, 6, 8)]
+      result <- cbind(upper_summary, lower_summary)[c("pid",
+                                                      "mean_upper",
+                                                      "upper_quantile",
+                                                      "mean_lower",
+                                                      "lower_quantile")]
       }
   }
   else {
