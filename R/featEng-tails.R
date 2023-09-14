@@ -93,7 +93,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         iterated_df <- rbind(iterated_df, new_df)
         }
 
-    result <- iterated_df[2:nrow(iterated_df), ]
+    result <- as_tibble(iterated_df[2:nrow(iterated_df), ])
 
   }
 
@@ -120,11 +120,11 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       )
 
       # putting all results into dataframe
-      result <- cbind(upper_summary, lower_summary)[c("pid",
+      result <- as_tibble(cbind(upper_summary, lower_summary)[c("pid",
                                                       "mean_upper",
                                                       "upper_quantile",
                                                       "mean_lower",
-                                                      "lower_quantile")]
+                                                      "lower_quantile")])
       }
   }
   else {
