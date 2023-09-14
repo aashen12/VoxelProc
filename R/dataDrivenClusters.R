@@ -4,9 +4,8 @@
 #' reduction and cluster analysis in hopes of isolating signals of interest in
 #' high-dimensional MRI voxel data.
 #'
-#' @param voxel_df A \code{list} or \code{matrix} object that represents voxel data.
-#' The first three columns should be coordinate data, while the rest of the
-#' columns represent voxel data.
+#' @param voxel_df_long A long \code{data.frame} or \code{matrix} object that
+#' represents spatial patient-voxel data.
 #' @param n_pca A \code{numeric} that indicates how many principal components
 #' will be used in the pipeline. Default is set to 20.
 #' @param n_umap A \code{numeric} that indicates how many umap components will
@@ -14,7 +13,7 @@
 #' @param n_clust A \code{numeric} that indicates how many clusters the k-means
 #' algorithm will search for in the pipeline. Default is set to 2.
 #' @param region A \code{character} that indicates which region of the brain the
-#' pipeline will be run on. Default is set to \code{null}.
+#' pipeline will be run on. Default is set to \code{NULL}.
 #'
 #' @details The pipeline uses two layers of dimensionality reduction in
 #' order to isolate signals of interest in high-dimensional voxel data. The first
@@ -22,10 +21,14 @@
 #' space. The second layer, UMAP, will embed this data into a space specified by
 #' the user. The default for this is the visualizable 2D space. Lastly, k-means
 #' is used to algorithmically determine where the various clusters lie. The
-#' argument \code{voxel_df} must be a n x p matrix, where p is the number of
-#' subjects. The first three columns should consist of the coordinates 'x', 'y',
-#' and 'z', respectively, representing the location of the given voxels in the
-#' brain. The pipeline runs on the voxel data, not on the coordinates.
+#' argument \code{voxel_df_long} should be an n by 5 data frame.
+#' The first three columns should be coordinate data, while the rest of the
+#' columns represent voxel data and patient ID values. The column names of the
+#' coordinate values must be \code{x}, \code{y}, and \code{z}, verbatim,
+#' representing the location of the given voxels in the brain.
+#' The column name of the voxel values must be \code{value}, and the column
+#' name of the patient IDs must be \code{pid}. The pipeline runs on the
+#' voxel data, not on the coordinates.
 #'
 #' @importFrom irlba prcomp_irlba
 #' @importFrom umap umap
@@ -44,7 +47,7 @@
 #' @export
 
 
-dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
+dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 2,
                                region = NULL) {
 
   # failsafe in case n_pca or UMAP < 2
@@ -52,8 +55,18 @@ dataDrivenClusters <- function(voxel_df, n_pca = 20, n_umap = 2, n_clust = 2,
     stop("Number of principal and UMAP components must be at least 2.")
   }
 
+  if (ncol(voxel_df_long) != 5) {
+    warning("Number of columns in input data does not equal the intended value (5).")
+  }
+
+  if (all(sort(names(voxel_df_long)) != c("pid", "value", "x", "y", "z"))) {
+    warning("Column names in input data are not equal to the intended names.")
+  }
+
   else {
   # remove all columns that sum to 0
+  voxel_df <- voxel_df_long %>%
+    tidyr::pivot_wider(names_from = "pid", values_from = "value")
   voxel_df <- voxel_df[, colSums(voxel_df) != 0]
   xyz <- voxel_df[, 1:3]
   voxel_df <- voxel_df[, 4:ncol(voxel_df)]
