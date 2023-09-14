@@ -84,14 +84,13 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
             summarise(lower_quantile = quantile(value, alpha), cluster = cluster)
           )
 
-        new_df <- cbind(upper_summary, lower_summary)[, c("pid",
+        new_df <- cbind(upper_summary, lower_summary)[c("pid",
                                                           "mean_upper",
                                                           "upper_quantile",
                                                           "mean_lower",
                                                           "lower_quantile",
                                                           "cluster")]
         iterated_df <- rbind(iterated_df, new_df)
-
         }
 
     result <- iterated_df[2:nrow(iterated_df), ]
