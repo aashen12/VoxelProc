@@ -63,7 +63,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
           combine_df %>%
             group_by(pid, cluster) %>%
             top_frac(alpha) %>%
-            summarise(mean_upper = mean(values))
+            summarise(mean_upper = mean(value))
         )
 
         lower_summary <- cbind(combine_df %>%
@@ -72,7 +72,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
           combine_df %>%
             group_by(pid, cluster) %>%
             top_frac(-alpha) %>%
-            summarise(mean_upper = mean(values))
+            summarise(mean_upper = mean(value))
         )
 
         result <- cbind(upper_summary, lower_summary)[c("pid",
