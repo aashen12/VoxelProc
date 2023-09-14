@@ -121,32 +121,17 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       upper_summary <- new_df %>%
         group_by(pid) %>%
         top_frac(alpha) %>%
-        summarise(mean_upper = mean(value))
+        summarise(mean_upper = mean(value),
+                  upper_quantile = quantile(value, 1-alpha))
 
       lower_summary <- new_df %>%
         group_by(pid) %>%
         top_frac(-alpha) %>%
-        summarise(mean_lower = mean(value))
-
-      for (i in seq_along(unique(new_df[,1]))) {
-
-        ID <- unique(new_df[,1])[i]
-
-        # filter the dataframe so that we are only considering individual PIDs
-        uniqueid_df <- new_df %>% filter(pid == ID)
-
-        # find quantile cutoffs
-        quantile_cutoff_lower <- quantile(uniqueid_df[, 5], alpha)
-        quantile_cutoff_upper <- quantile(uniqueid_df[, 5], 1-alpha)
-
-        lower_quantile_vec[i] <- quantile_cutoff_lower
-        upper_quantile_vec[i] <- quantile_cutoff_upper
-
-      }
+        summarise(mean_lower = mean(value),
+                  lower_quantile = quantile(value, alpha))
 
       # putting all results into dataframe
-      result <- cbind(cbind(upper_summary, lower_summary)[,c(1,2,4)],
-                      cbind(lower_quantile_vec, upper_quantile_vec))
+      result <- cbind(upper_summary, lower_summary)[,c(1,2,3,5,6)]
 
       }
 
