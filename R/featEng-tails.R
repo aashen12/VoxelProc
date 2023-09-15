@@ -58,7 +58,9 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
           summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
                     mean_lower = mean(value[value < quantile(value, alpha)]))
 
-        result <- cbind(quantile_summary, mean_summary)
+        mean_cols <- mean_summary[c("mean_upper", "mean_lower")]
+
+        result <- cbind(quantile_summary, mean_cols)
   }
 
     else {
