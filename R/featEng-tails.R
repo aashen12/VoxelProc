@@ -48,13 +48,6 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
 
-      iterated_df <- data.frame(pid = NA,
-                                mean_upper = NA,
-                                upper_quantile = NA,
-                                mean_lower = NA,
-                                lower_quantile = NA,
-                                cluster = NA)
-
         quantile_summary <- combine_df %>%
           group_by(pid, cluster) %>%
           summarise(upper_quantile = quantile(value, 1-alpha), lower_quantile = quantile(value, alpha))
@@ -63,7 +56,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
         mean_summary <- combine_df %>%
           group_by(pid, cluster) %>%
           summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
-                    mean_lower = mean(value[value < quantile(value, alpha)]))[c("mean_upper", "mean_lower")]
+                    mean_lower = mean(value[value < quantile(value, alpha)]))
 
         result <- cbind(quantile_summary, mean_summary)
   }
