@@ -66,7 +66,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                                                        "lower_quantile",
                                                        "mean_upper",
                                                        "mean_lower")]
-  }
+    }
 
     else {
 
