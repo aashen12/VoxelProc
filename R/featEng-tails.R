@@ -60,7 +60,12 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
         mean_cols <- mean_summary[c("mean_upper", "mean_lower")]
 
-        result <- cbind(quantile_summary, mean_cols)
+        result <- cbind(quantile_summary, mean_cols)[c("pid",
+                                                       "cluster",
+                                                       "upper_quantile",
+                                                       "lower_quantile",
+                                                       "mean_upper",
+                                                       "mean_lower")]
   }
 
     else {
@@ -87,10 +92,10 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
 
       # putting all results into dataframe
       result <- as_tibble(cbind(upper_summary, lower_summary)[c("pid",
-                                                      "mean_upper",
                                                       "upper_quantile",
-                                                      "mean_lower",
-                                                      "lower_quantile")])
+                                                      "lower_quantile",
+                                                      "mean_upper",
+                                                      "mean_lower")])
       }
   }
   else {
