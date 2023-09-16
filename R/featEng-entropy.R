@@ -3,11 +3,11 @@
 #' @export
 
 
-computeRegionEntropy <- function(voxel_df, data_df, sep_clusters = TRUE) {
+computeRegionEntropy <- function(voxel_df, data_df) {
+
+  if (!is.null(data_df)){
 
   combine_df <- cbind(voxel_df, data_df[, 4:6]) %>% tibble()
-
-  if (sep_clusters){
   result <- combine_df %>%
     mutate_at(vars("cluster"), factor) %>%
     group_by(pid, cluster) %>%
@@ -20,8 +20,7 @@ computeRegionEntropy <- function(voxel_df, data_df, sep_clusters = TRUE) {
   }
 
   else{
-  result <- combine_df %>%
-    mutate_at(vars("cluster"), factor) %>%
+  result <- voxel_df %>%
     group_by(pid) %>%
     mutate(nvox = n()) %>%
     summarise(entropy = entropy::entropy(entropy::discretize(value, numBins = floor(sqrt(nvox[1]))))
