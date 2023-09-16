@@ -1,3 +1,12 @@
+#' @title Computing Region Entropy
+#'
+#' @description
+#'
+#' @param
+#'
+#' @details
+#'
+#'
 #' @import entropy
 #'
 #' @export
