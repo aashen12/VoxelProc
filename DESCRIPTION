@@ -15,6 +15,9 @@ Imports:
   ggplot2,
   irlba,
   tibble,
+  mclust,
+  reshape2,
+  entropy,
   umap
 Suggests:
     testthat (>= 3.0.0),

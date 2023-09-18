@@ -5,7 +5,7 @@
 \title{Data Driven Clusters}
 \usage{
 dataDrivenClusters(
-  voxel_df,
+  voxel_df_long,
   n_pca = 20,
   n_umap = 2,
   n_clust = 2,
@@ -13,9 +13,8 @@ dataDrivenClusters(
 )
 }
 \arguments{
-\item{voxel_df}{A \code{list} or \code{matrix} object that represents voxel data.
-The first three columns should be coordinate data, while the rest of the
-columns represent voxel data.}
+\item{voxel_df_long}{A long \code{data.frame} or \code{matrix} object that
+represents spatial patient-voxel data.}
 
 \item{n_pca}{A \code{numeric} that indicates how many principal components
 will be used in the pipeline. Default is set to 20.}
@@ -27,7 +26,7 @@ be used in the pipeline. Default is set to 2.}
 algorithm will search for in the pipeline. Default is set to 2.}
 
 \item{region}{A \code{character} that indicates which region of the brain the
-pipeline will be run on. Default is set to \code{null}.}
+pipeline will be run on. Default is set to \code{NULL}.}
 }
 \value{
 A tibble with the following components:
@@ -50,8 +49,12 @@ layer, PCA, will embed the data into a smaller but still non-visualizable
 space. The second layer, UMAP, will embed this data into a space specified by
 the user. The default for this is the visualizable 2D space. Lastly, k-means
 is used to algorithmically determine where the various clusters lie. The
-argument \code{voxel_df} must be a n x p matrix, where p is the number of
-subjects. The first three columns should consist of the coordinates 'x', 'y',
-and 'z', respectively, representing the location of the given voxels in the
-brain. The pipeline runs on the voxel data, not on the coordinates.
+argument \code{voxel_df_long} should be an n by 5 data frame.
+The first three columns should be coordinate data, while the rest of the
+columns represent voxel data and patient ID values. The column names of the
+coordinate values must be \code{x}, \code{y}, and \code{z}, verbatim,
+representing the location of the given voxels in the brain.
+The column name of the voxel values must be \code{value}, and the column
+name of the patient IDs must be \code{pid}. The pipeline runs on the
+voxel data, not on the coordinates.
 }
