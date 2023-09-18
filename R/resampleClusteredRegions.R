@@ -117,14 +117,11 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     # turning the matrix upper-triangular
     ARI[upper.tri(ARI)] <- NA
 
-    # extracting individual values that are off-diagonal
-    values <- ARI[col(ARI) != row(ARI)]
-
     # setting diags to 1
-    diag(ARI) <- 1
+    diag(ARI) <- NA
 
     # taking average
-    avg <- mean(values[!is.na(values) & values != 1])
+    avg <- mean(ARI[!is.na(ARI)])
 
     # plotting matrix
     plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
