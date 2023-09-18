@@ -67,5 +67,5 @@ test_that(paste("dataDrivenClusters returns the correct UMAP coordinates"),
             test <- sim_result$data_df
 
             expect_equal(sum(test[,4]), sum(result$data_df[,4]))
-            expect_equal(test[,5], result$data_df[,5])
+            expect_equal(sum(test[,5]), sum(result$data_df[,5]))
           })

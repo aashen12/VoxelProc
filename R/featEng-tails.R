@@ -43,62 +43,34 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
     if (!is.null(data_df)) {
 
       # cbind voxel_df and data_df
-      combine_df <- cbind(voxel_df, data_df)
-
-      # extracting the columns in following order: PID, x, y, z, Value, Cluster
-      combind_df <- combine_df[, c(2, 3, 4, 5, 6, 12)]
-
-      # adding additional xyz identifier column
-      combine_df <- combine_df %>% mutate(xyz = paste0(combine_df[, 1],", ",combine_df[, 2],", ",combine_df[, 3]))
+      combine_df <- cbind(voxel_df, data_df[, 4:6])
 
       #removing x, y, z columns since those are redundant after the xyz column.
-      combine_df <- combine_df[, c(1, 5, 6, 7)]
+      combine_df <- combine_df[c("pid", "value", "cluster")]
 
-      num_clusts <- length(unique(combine_df[, 3]))
+        quantile_summary <- combine_df %>%
+          group_by(pid, cluster) %>%
+          summarise(upper_quantile = quantile(value, 1-alpha), lower_quantile = quantile(value, alpha))
 
-      iterated_df <- data.frame(pid = NA,
-                                mean_upper = NA,
-                                upper_quantile = NA,
-                                mean_lower = NA,
-                                lower_quantile = NA,
-                                cluster = NA)
 
-      # cycling through each cluster label
-      for (i in 1:num_clusts) {
+        mean_summary <- combine_df %>%
+          group_by(pid, cluster) %>%
+          summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
+                    mean_lower = mean(value[value < quantile(value, alpha)]))
 
-        # isolating individual clusters
-        filtered_df <- combine_df %>% filter(cluster == i)
+        mean_cols <- mean_summary[c("mean_upper", "mean_lower")]
 
-        upper_summary <- cbind(filtered_df %>%
-          group_by(pid) %>%
-          top_frac(alpha) %>%
-          summarise(mean_upper = mean(value)),
-            filtered_df %>%
-            group_by(pid) %>%
-            summarise(upper_quantile = quantile(value, 1-alpha))
-          )
-
-        lower_summary <- cbind(filtered_df %>%
-          group_by(pid) %>%
-          top_frac(-alpha) %>%
-          summarise(mean_lower = mean(value)),
-            filtered_df %>%
-            group_by(pid) %>%
-            summarise(lower_quantile = quantile(value, alpha), cluster = cluster)
-          )
-
-        new_df <- cbind(upper_summary, lower_summary)[, c(1, 2, 4, 6, 8, 9)]
-        iterated_df <- rbind(iterated_df, new_df)
-
-        }
-
-    result <- iterated_df[2:nrow(iterated_df), ]
-
+        result <- cbind(quantile_summary, mean_cols)[c("pid",
+                                                       "cluster",
+                                                       "upper_quantile",
+                                                       "lower_quantile",
+                                                       "mean_upper",
+                                                       "mean_lower")]
   }
 
     else {
 
-      new_df <- voxel_df[, c(2:6)]
+      new_df <- voxel_df[c("pid", "value")]
 
       upper_summary <- cbind(new_df %>%
         group_by(pid) %>%
@@ -119,7 +91,11 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
       )
 
       # putting all results into dataframe
-      result <- cbind(upper_summary, lower_summary)[,c(1, 2, 4, 6, 8)]
+      result <- as_tibble(cbind(upper_summary, lower_summary)[c("pid",
+                                                      "upper_quantile",
+                                                      "lower_quantile",
+                                                      "mean_upper",
+                                                      "mean_lower")])
       }
   }
   else {
