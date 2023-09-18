@@ -1,11 +1,31 @@
 #' @title Computing Region Entropy
 #'
-#' @description
+#' @description Computes the entropy of the MRI voxel values for each patient
+#' stratified on individual clusters.
 #'
-#' @param
+#' @details \code{computeRegionEntropy()} takes in two arguments: a \code{tibble}
+#' voxel_df and a \code{tibble} data_df. \code{voxel_df} is assumed to be in long
+#' format, with each individual pixel being represented on a single row, so that
+#' the first columns is 'pid,' columns 2 to 4 are 'x', 'y', 'z', and column 5
+#' is 'value'. \code{data_df} is assumed to be the output of \code{dataDrivenClusters()}.
+#' \code{computeRegionEntropy()} combines \code{voxel_df} and \code{data_df} into
+#' a single \code{tibble}, and then pivots this combined data with respect to
+#' the columns 'pid' and 'cluster'. We then find the entropy of each pid-cluster
+#' pair. If \code{data_df} is \code{null}, then the function assumes that all
+#' the observations come from the same cluster.
 #'
-#' @details
-#'
+#' @param voxel_df A \code{dataframe} in the following format: the first column
+#' is assumed to be an index column counting from 1 to \code{nrow(voxel_df)},
+#' and the second column is a column labeled "PID," which contains patient
+#' identification. The third, fourth, and fifth columns are 'x', 'y', and 'z'
+#' columns. The sixth column contains the value of the voxel that corresponds
+#' with the given x-y-z coordinate.
+#' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
+#' This tibble should be in the following format: the first three columns are
+#' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
+#' UMAP coordinates, and the fifth column contains cluster labels. If this is
+#' equal to \code{null}, \code{computeTailMeans()} will assume that all data comes
+#' from the same cluster.
 #'
 #' @import entropy
 #'
@@ -33,4 +53,6 @@ computeRegionEntropy <- function(voxel_df, data_df) {
     mutate(nvox = n()) %>%
     summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(nvox[1])))))
   }
+
+  return(result)
 }
