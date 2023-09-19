@@ -32,7 +32,7 @@
 #' @export
 
 
-computeRegionEntropy <- function(voxel_df, data_df) {
+computeRegionEntropy <- function(voxel_df, data_df = NULL) {
 
   if (!is.null(data_df)) {
   combine_df <- cbind(voxel_df, data_df[, 4:6]) %>% tibble()
