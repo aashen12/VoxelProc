@@ -46,7 +46,7 @@ computeRegionEntropy <- function(voxel_df, data_df = NULL) {
     summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(avg_vox[1]))))
     ) %>%
     pivot_wider(names_from = "cluster", values_from = "entropy",
-                names_prefix = "entropy_cluster_")
+                names_prefix = "entropy_c")
   }
 
 
