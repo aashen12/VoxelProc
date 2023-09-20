@@ -65,7 +65,9 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                                                        "upper_quantile",
                                                        "lower_quantile",
                                                        "mean_upper",
-                                                       "mean_lower")]
+                                                       "mean_lower")] %>%
+          pivot_wider(names_from = "cluster",
+                      values_from = c("upper_quantile", "lower_quantile", "mean_upper", "mean_lower"))
   }
 
     else {
