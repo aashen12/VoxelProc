@@ -15,6 +15,7 @@ mergeData <- function(feat_eng_df, id_mapping = NULL, test_clinical_data) {
   }
 
   else {
+  colnames(test_clinical_data)[1] <- "pid"
   result <- left_join(feat_eng_df, test_clinical_data, by = "pid") %>%
     na.omit()
   }
