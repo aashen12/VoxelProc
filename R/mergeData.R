@@ -1,6 +1,6 @@
 #' @title Incorporating feature engineering with clinical data
 #'
-#' @description Combines the feature engineering results from \code{computeRegionEntrop()}
+#' @description Combines the feature engineering results from \code{computeRegionEntropy()}
 #' with clinical data to form a new data set.
 #'
 #' @details The function takes in three parameters: \code{feat_eng_df} is an output
