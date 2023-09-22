@@ -100,10 +100,10 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
   message("Cluster vectors calculated")
 
-    # build matrix of ARI values
-    ARI <- matrix(NA, n_resamp, n_resamp)
+  # build matrix of ARI values
+  ARI <- matrix(NA, n_resamp, n_resamp)
 
-    # reiterate to find pairwise ARIs
+  # reiterate to find pairwise ARIs
   for (i in 1:n_resamp) {
     for (j in c(1:n_resamp)[1:n_resamp != i]) {
       ARI_j <- adjustedRandIndex(cluster_vec[, i], cluster_vec[, j])
