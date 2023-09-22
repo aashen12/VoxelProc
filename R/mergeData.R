@@ -29,10 +29,10 @@ mergeData <- function(feat_eng_df, clinical_data, id_mapping = NULL) {
 
   # note: still need to generalize this to more colnames.
   if (!is.null(id_mapping)) {
-  colnames(id_mapping) <- c("SubID", "PatID", "pid", "DataDir")
+  id_mapping <- id_mapping %>% rename("pid" = "ScrID")
   df_merged <- left_join(feat_eng_df, id_mapping, by = "pid") %>%
     dplyr::relocate(PatID, .after = "pid") %>%
-    dplyr::select(-pid, -SubID, -DataDir)
+    dplyr::select(-pid, -SubjID, -DataDir)
   result <- left_join(df_merged, clinical_data, by = "PatID") %>%
     na.omit()
   }
