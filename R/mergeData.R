@@ -23,6 +23,8 @@
 #' @returns A \code{tibble} that outputs the original clinical dataframe with an
 #' added entropy column.
 #'
+#' @import tidyr
+#'
 #' @export
 
 mergeData <- function(feat_eng_df, clinical_data, id_mapping = NULL) {
@@ -34,13 +36,13 @@ mergeData <- function(feat_eng_df, clinical_data, id_mapping = NULL) {
     dplyr::relocate(PatID, .after = "pid") %>%
     dplyr::select(-pid, -SubjID, -DataDir)
   result <- left_join(df_merged, clinical_data, by = "PatID") %>%
-    na.omit()
+    tidyr::drop_na(PatID)
   }
 
   else {
   colnames(clinical_data)[1] <- "pid"
   result <- left_join(feat_eng_df, clinical_data, by = "pid") %>%
-    na.omit()
+    tidyr::drop_na(pid)
   }
 
   return(result)
