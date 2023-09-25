@@ -9,7 +9,7 @@
 #' argument that allows the practitioner to map different forms of patient
 #' identification with each other. If this is \code{null}, then it will be assumed
 #' that the 'pid' column in \code{feat_eng_df} is the same identification as what
-#' is used in \code{clinical_data}. If \code{id_mapping} is not \code{null},
+#' is used in \code{clinical_data}. If \code{id_mapping} is not \code{NULL},
 #' then 'pid' will be used as the common identification between \code{feat_eng_df}
 #' and \code{clinical_data}.
 #'
@@ -19,8 +19,9 @@
 #' of the patients.
 #' @param match A \code{character} indicating which column name corresponds to
 #' the identificaton seen in \code{feat_eng_df} and \code{id_mapping}
-#' @param id_mapping A \code{dataframe} that has the following columns:
-#' 'SubId', 'PatID', 'ScrID', and 'DataDir'.
+#' @param id_mapping A \code{dataframe} that has at least the columns 'PatID' and
+#' match, the latter of which is an argument in the function. If 'match' is not
+#' specified, then the function will assume that 'ScrID' is the second column name.
 #'
 #' @returns A \code{tibble} that outputs the original clinical dataframe with an
 #' added entropy column.
@@ -37,13 +38,13 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
   df_merged <- left_join(feat_eng_df, id_mapping, by = "pid") %>%
     dplyr::relocate(PatID, .after = "pid") %>%
     dplyr::select(-pid, -SubjID, -DataDir)
-  result <- left_join(df_merged, clinical_data, by = "PatID") %>%
+  result <- left_join(clinical_data, df_merged, by = "PatID") %>%
     tidyr::drop_na(PatID)
   }
 
   else {
   colnames(clinical_data)[1] <- "pid"
-  result <- left_join(feat_eng_df, clinical_data, by = "pid") %>%
+  result <- left_join(clinical_data, feat_eng_df, by = "pid") %>%
     tidyr::drop_na(pid)
   }
 
