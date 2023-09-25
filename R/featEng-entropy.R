@@ -29,6 +29,14 @@
 #'
 #' @import entropy
 #'
+#' @return A tibble with the following components:
+#' \describe{
+#' \item{pid}{a column indicating patient identification}
+#' \item{cluster}{a column indicating which cluster the entropy is being
+#' calculated from. This component will be missing if \code{data_df} is \code{null}.}
+#' \item{entropy}{column indicating the calculated entropy of the patient}
+#' }
+#'
 #' @export
 
 

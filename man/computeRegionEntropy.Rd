@@ -21,6 +21,15 @@ UMAP coordinates, and the fifth column contains cluster labels. If this is
 equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
 from the same cluster.}
 }
+\value{
+A tibble with the following components:
+\describe{
+\item{pid}{a column indicating patient identification}
+\item{cluster}{a column indicating which cluster the entropy is being
+calculated from. This component will be missing if \code{data_df} is \code{null}.}
+\item{entropy}{column indicating the calculated entropy of the patient}
+}
+}
 \description{
 Computes the entropy of the MRI voxel values for each patient
 stratified on individual clusters.
