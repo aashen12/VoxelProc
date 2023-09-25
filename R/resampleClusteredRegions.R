@@ -28,7 +28,7 @@
 #' @param n_clust A \code{numeric} that indicates how many clusters the k-means
 #' algorithm will search for in the pipeline. Default is set to 2.
 #' @param region A \code{character} that indicates which region of the brain the
-#' pipeline will be run on. Default is set to \code{null}.
+#' pipeline will be run on. Default is set to \code{NULL}.
 #' @param n_resamp A \code{numeric} that indicates how many times
 #' \code{resampleClusteredRegions()} should resample from \code{voxel_df}.
 #' @param subsamp_prop A \code{numeric} indicating what proportion of \code{voxel_df}

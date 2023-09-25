@@ -18,7 +18,7 @@ with the given x-y-z coordinate.}
 This tibble should be in the following format: the first three columns are
 assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
 UMAP coordinates, and the fifth column contains cluster labels. If this is
-equal to \code{null}, \code{computeTailMeans()} will assume that all data comes
+equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
 from the same cluster.}
 
 \item{alpha}{A \code{double} that indicates what quantiles should be extracted
