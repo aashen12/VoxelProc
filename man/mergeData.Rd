@@ -4,11 +4,14 @@
 \alias{mergeData}
 \title{Incorporating feature engineering with clinical data}
 \usage{
-mergeData(feat_eng_df, clinical_data, id_mapping = NULL)
+mergeData(feat_eng_df, clinical_data, match = "ScrID", id_mapping = NULL)
 }
 \arguments{
 \item{feat_eng_df}{A \code{tibble} that takes the same form as an output of
 \code{computeRegionEntropy()}.}
+
+\item{match}{A \code{character} indicating which column name corresponds to
+the identificaton seen in \code{feat_eng_df} and \code{id_mapping}}
 
 \item{id_mapping}{A \code{dataframe} that has the following columns:
 'SubId', 'PatID', 'ScrID', and 'DataDir'.}

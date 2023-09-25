@@ -17,6 +17,8 @@
 #' \code{computeRegionEntropy()}.
 #' @param test_clinical_data A \code{dataframe} that includes the clinical data
 #' of the patients.
+#' @param match A \code{character} indicating which column name corresponds to
+#' the identificaton seen in \code{feat_eng_df} and \code{id_mapping}
 #' @param id_mapping A \code{dataframe} that has the following columns:
 #' 'SubId', 'PatID', 'ScrID', and 'DataDir'.
 #'
@@ -27,11 +29,11 @@
 #'
 #' @export
 
-mergeData <- function(feat_eng_df, clinical_data, id_mapping = NULL) {
+mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = NULL) {
 
   # note: still need to generalize this to more colnames.
   if (!is.null(id_mapping)) {
-  id_mapping <- id_mapping %>% rename("pid" = "ScrID")
+  id_mapping <- id_mapping %>% rename("pid" = match)
   df_merged <- left_join(feat_eng_df, id_mapping, by = "pid") %>%
     dplyr::relocate(PatID, .after = "pid") %>%
     dplyr::select(-pid, -SubjID, -DataDir)
