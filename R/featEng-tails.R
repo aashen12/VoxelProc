@@ -29,6 +29,19 @@
 #' @param alpha A \code{double} that indicates what quantiles should be extracted
 #' from the patient data. The lower the number, the tighter the tail will be.
 #'
+#' @return A tibble with the following components:
+#' \describe{
+#' \item{pid}{a column indicating patient identification}
+#' \item{cluster}{column indicating which cluster the given feature was extracted
+#' from}
+#' \item{upper_quantile}{the upper alpha percentile of the voxel values in the
+#' given cluster}
+#' \item{lower_quantile}{the lower alpha percentile of the voxel values in the
+#' given cluster}
+#' \item{mean_upper}{the mean of the values above the upper quantile}
+#' \item{mean_lower}{the mean of the values beneath the lower quantile}
+#' }
+#'
 #' @export
 
 computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
