@@ -4,7 +4,7 @@
 \alias{computeRegionEntropy}
 \title{Computing Region Entropy}
 \usage{
-computeRegionEntropy(voxel_df, data_df)
+computeRegionEntropy(voxel_df, data_df = NULL)
 }
 \arguments{
 \item{voxel_df}{A \code{dataframe} in the following format: the first column
@@ -18,8 +18,17 @@ with the given x-y-z coordinate.}
 This tibble should be in the following format: the first three columns are
 assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
 UMAP coordinates, and the fifth column contains cluster labels. If this is
-equal to \code{null}, \code{computeTailMeans()} will assume that all data comes
+equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
 from the same cluster.}
+}
+\value{
+A tibble with the following components:
+\describe{
+\item{pid}{a column indicating patient identification}
+\item{cluster}{a column indicating which cluster the entropy is being
+calculated from. This component will be missing if \code{data_df} is \code{null}.}
+\item{entropy}{column indicating the calculated entropy of the patient}
+}
 }
 \description{
 Computes the entropy of the MRI voxel values for each patient

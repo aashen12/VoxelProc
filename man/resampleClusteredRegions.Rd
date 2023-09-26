@@ -35,7 +35,7 @@ algorithm will search for in the pipeline. Default is set to 2.}
 will be resampled at each iteration of \code{resampleClusteredRegions}.}
 
 \item{region}{A \code{character} that indicates which region of the brain the
-pipeline will be run on. Default is set to \code{null}.}
+pipeline will be run on. Default is set to \code{NULL}.}
 }
 \value{
 A list with the following components:
