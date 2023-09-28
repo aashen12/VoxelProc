@@ -47,6 +47,7 @@
 #' @export
 
 
+
 dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 2,
                                region = NULL) {
 
@@ -70,6 +71,7 @@ dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 
   voxel_df <- voxel_df[, colSums(voxel_df) != 0]
   xyz <- voxel_df[, 1:3]
   voxel_df <- voxel_df[, 4:ncol(voxel_df)]
+  # fix numeric indexing
 
   # scale the data
   voxel_df <- scale(voxel_df, center = TRUE, scale = TRUE)
