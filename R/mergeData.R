@@ -36,9 +36,8 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
   if (!is.null(id_mapping)) {
   id_mapping <- id_mapping %>% rename("pid" = match)
   df_merged <- left_join(feat_eng_df, id_mapping, by = "pid") %>%
-    dplyr::relocate(PatID, .after = "pid") %>%
-    dplyr::select(-pid, -SubjID, -DataDir)
-  # why does this line exist?
+    dplyr::relocate(PatID, .after = "pid")
+
   result <- left_join(clinical_data, df_merged, by = "PatID") %>%
     tidyr::drop_na(PatID)
   }
