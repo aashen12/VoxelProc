@@ -71,7 +71,6 @@ dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 
   voxel_df <- voxel_df[, colSums(voxel_df) != 0]
   xyz <- voxel_df[c("x", "y", "z")]
   voxel_df <- select(voxel_df, -c("x", "y", "z"))
-  # fix numeric indexing
 
   # scale the data
   voxel_df <- scale(voxel_df, center = TRUE, scale = TRUE)
