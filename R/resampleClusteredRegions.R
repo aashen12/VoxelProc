@@ -77,6 +77,7 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
   # extract xyz coords
   xyz <- voxel_df[, 1:3]
+  # this still assumes the data is wide -- please fix so i can use it for the presentation
 
   # run a for loop to resample and calculate clusters
   for (i in 1:n_resamp) {
