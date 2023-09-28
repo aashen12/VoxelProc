@@ -49,7 +49,7 @@
 #'
 #' @export
 
-resampleClusteredRegions <- function(voxel_df, n_pca = 20,
+resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
                                      n_umap = 2, n_clust = 2,
                                      n_resamp = 5,
                                      subsamp_prop = 0.8,
@@ -64,6 +64,9 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
     stop("subsamp_prop must be less than 1")
   }
   else{
+
+  voxel_df <- voxel_df_long %>%
+      tidyr::pivot_wider(names_from = "pid", values_from = "value")
 
   # find the number of columns needed to sample from subsamp_prop
   num <- floor(ncol(voxel_df[, 4:ncol(voxel_df)])*subsamp_prop)

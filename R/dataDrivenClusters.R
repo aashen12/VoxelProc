@@ -117,7 +117,7 @@ dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 
     result <- list(data_df = data_df)
   }
 
-  # the return object will consist just data_df
+  # the return object will consist of just data_df
   return(result)
   }
 }
