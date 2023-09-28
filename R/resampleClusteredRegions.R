@@ -69,17 +69,17 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
       tidyr::pivot_wider(names_from = "pid", values_from = "value")
 
   # find the number of columns needed to sample from subsamp_prop
-  num <- floor(ncol(voxel_df[, 4:ncol(voxel_df)])*subsamp_prop)
+  num <- floor((ncol(voxel_df) - 3)*subsamp_prop)
 
   # create empty data frame which clusters will be stored in later
   cluster_vec <- data.frame(matrix(NA,
                                    nrow = nrow(voxel_df),
                                    ncol = n_resamp))
 
-  voxel_df_data <- voxel_df[, 4:ncol(voxel_df)]
+  voxel_df_data <- select(voxel_df, -c("x", "y", "z"))
 
   # extract xyz coords
-  xyz <- voxel_df[, 1:3]
+  xyz <- voxel_df[c("x", "y", "z")]
   # this still assumes the data is wide -- please fix so i can use it for the presentation
 
   # run a for loop to resample and calculate clusters
