@@ -89,6 +89,9 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
 
     # bind xyz back to the subsample
     new_voxel_df <- cbind(xyz, subsamp)
+    new_voxel_df <- new_voxel_df %>%
+      tidyr::pivot_longer(cols = !(x | y | z), names_to = "pid", values_to = "value") %>%
+      dplyr::relocate(pid, .before = "x")
 
     # run dataDrivenClusters() with specified values
     DDC <- suppressMessages(dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
