@@ -6,11 +6,9 @@
 #'
 #' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df}
 #' according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
-#' on these parameters, a certain proportion of the columns of \code{voxel_df}
+#' on these parameters, a certain proportion of the patients in \code{voxel_df}
 #' will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
-#' In particular, the resampling will be performed only on columns 4 to \code{ncol(voxel_df)}
-#' of \code{voxel_df}, since the first three columns should be the 'x', 'y',  and 'z'
-#' coordinates. After running \code{dataDrivenClusters} on the subsets, the cluster
+#' After running \code{dataDrivenClusters} on the subsets, the cluster
 #' labels will be extracted for each resample. \code{resampleClusteringRegions()}
 #' then uses the adjusted Rand Index to find how similar each pair of clusterings are to
 #' each other. The function then averages the pairwise adjusted Rand indices as
@@ -101,9 +99,9 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters
-    message(paste0("Cluster ", i, " calculated"))
+    message(paste0("Subsample ", i, " calculated"))
   }
-  message("Cluster vectors calculated")
+  message("All subsamples calculated")
 
   # build matrix of ARI values
   ARI <- matrix(NA, n_resamp, n_resamp)
@@ -125,7 +123,7 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
   diag(ARI) <- NA
 
   # taking average
-  avg <- mean(ARI[!is.na(ARI)])
+  avg <- round(mean(ARI[!is.na(ARI)]), digits = 2)
 
   # plotting matrix
   plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
