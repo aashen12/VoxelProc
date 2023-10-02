@@ -55,14 +55,16 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
                                      subsamp_prop = 0.8,
                                      region = NULL) {
   # failsafes
-
   if (n_umap < 2 || n_pca < 2){
     stop("n_umap and n_pca must be greater than 1")
   }
+
   else{
+
   if (subsamp_prop == 1 || subsamp_prop == 0){
     stop("subsamp_prop must be less than 1")
   }
+
   else{
 
   voxel_df <- voxel_df_long %>%
@@ -75,7 +77,6 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
   cluster_vec <- data.frame(matrix(NA,
                                    nrow = nrow(voxel_df),
                                    ncol = n_resamp))
-
   voxel_df_data <- select(voxel_df, -c("x", "y", "z"))
 
   # extract xyz coords
@@ -100,10 +101,8 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters
-
     message(paste0("Cluster ", i, " calculated"))
   }
-
   message("Cluster vectors calculated")
 
   # build matrix of ARI values
@@ -115,34 +114,32 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
       ARI_j <- adjustedRandIndex(cluster_vec[, i], cluster_vec[, j])
       ARI[i, j] <- ARI_j
     }
-
   }
 
   message("Matrix calculated")
 
-    # turning the matrix upper-triangular
-    ARI[upper.tri(ARI)] <- NA
+  # turning the matrix upper-triangular
+  ARI[upper.tri(ARI)] <- NA
 
-    # setting diags to 1
-    diag(ARI) <- NA
+  # setting diags to 1
+  diag(ARI) <- NA
 
-    # taking average
-    avg <- mean(ARI[!is.na(ARI)])
+  # taking average
+  avg <- mean(ARI[!is.na(ARI)])
 
-    # plotting matrix
-    plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
-      geom_tile(color = "white") +
-      geom_text(aes(label = round(value, 2), fontface = "bold"), color = "black") +
-      theme_bw() +
-      scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
-      labs(x = "Sample #", y = "Sample #",
-           title = "ARI Matrix",
-           subtitle = paste0("average = ", avg)) +
-      theme(plot.title = element_text(face = "bold"))
+  # plotting matrix
+  plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = round(value, 2), fontface = "bold"), color = "black") +
+    theme_bw() +
+    scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
+    labs(x = "Sample #", y = "Sample #",
+          title = "ARI Matrix",
+          subtitle = paste0("average = ", avg)) +
+    theme(plot.title = element_text(face = "bold"))
 
-
-    # appending to list
-    result <- list(average = avg, matrix = plot, values = ARI)
+  # appending to list
+  result <- list(average = avg, matrix = plot, values = ARI)
 
   return(result)
 
