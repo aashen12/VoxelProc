@@ -81,7 +81,7 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
   xyz <- voxel_df[c("x", "y", "z")]
 
   # run parallelized stuff
-  parloop <- foreach (i=1:n_resamp, .combine = "c") %dopar% {
+  parloop <- foreach(i=1:n_resamp, .combine = "c") %dopar% {
 
     # sample voxel data from voxel_df
     subsamp <- voxel_df_data[, sample(ncol(voxel_df_data), size = num)]
