@@ -103,7 +103,7 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
 
   # run a fast for loop
   for (i in 1:n_resamp){
-    cluster_vec[,i] <- parloop[i]
+    cluster_vec[, i] <- parloop[i]
   }
 
   # build matrix of ARI values
