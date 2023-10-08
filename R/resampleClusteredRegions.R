@@ -6,11 +6,9 @@
 #'
 #' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df}
 #' according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
-#' on these parameters, a certain proportion of the columns of \code{voxel_df}
+#' on these parameters, a certain proportion of the patients in \code{voxel_df}
 #' will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
-#' In particular, the resampling will be performed only on columns 4 to \code{ncol(voxel_df)}
-#' of \code{voxel_df}, since the first three columns should be the 'x', 'y',  and 'z'
-#' coordinates. After running \code{dataDrivenClusters} on the subsets, the cluster
+#' After running \code{dataDrivenClusters} on the subsets, the cluster
 #' labels will be extracted for each resample. \code{resampleClusteringRegions()}
 #' then uses the adjusted Rand Index to find how similar each pair of clusterings are to
 #' each other. The function then averages the pairwise adjusted Rand indices as
@@ -49,34 +47,38 @@
 #'
 #' @export
 
-resampleClusteredRegions <- function(voxel_df, n_pca = 20,
+resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
                                      n_umap = 2, n_clust = 2,
                                      n_resamp = 5,
                                      subsamp_prop = 0.8,
                                      region = NULL) {
   # failsafes
-
   if (n_umap < 2 || n_pca < 2){
     stop("n_umap and n_pca must be greater than 1")
   }
+
   else{
+
   if (subsamp_prop == 1 || subsamp_prop == 0){
     stop("subsamp_prop must be less than 1")
   }
+
   else{
 
+  voxel_df <- voxel_df_long %>%
+      tidyr::pivot_wider(names_from = "pid", values_from = "value")
+
   # find the number of columns needed to sample from subsamp_prop
-  num <- floor(ncol(voxel_df[, 4:ncol(voxel_df)])*subsamp_prop)
+  num <- floor((ncol(voxel_df) - 3)*subsamp_prop)
 
   # create empty data frame which clusters will be stored in later
   cluster_vec <- data.frame(matrix(NA,
                                    nrow = nrow(voxel_df),
                                    ncol = n_resamp))
-
-  voxel_df_data <- voxel_df[, 4:ncol(voxel_df)]
+  voxel_df_data <- select(voxel_df, -c("x", "y", "z"))
 
   # extract xyz coords
-  xyz <- voxel_df[, 1:3]
+  xyz <- voxel_df[c("x", "y", "z")]
 
   # run a for loop to resample and calculate clusters
   for (i in 1:n_resamp) {
@@ -86,6 +88,9 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
     # bind xyz back to the subsample
     new_voxel_df <- cbind(xyz, subsamp)
+    new_voxel_df <- new_voxel_df %>%
+      tidyr::pivot_longer(cols = !(x | y | z), names_to = "pid", values_to = "value") %>%
+      dplyr::relocate(pid, .before = "x")
 
     # run dataDrivenClusters() with specified values
     DDC <- suppressMessages(dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
@@ -94,11 +99,9 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters
-
-    message(paste0("Cluster ", i, " calculated"))
+    message(paste0("Subsample ", i, " calculated"))
   }
-
-  message("Cluster vectors calculated")
+  message("All subsamples calculated")
 
   # build matrix of ARI values
   ARI <- matrix(NA, n_resamp, n_resamp)
@@ -109,34 +112,32 @@ resampleClusteredRegions <- function(voxel_df, n_pca = 20,
       ARI_j <- adjustedRandIndex(cluster_vec[, i], cluster_vec[, j])
       ARI[i, j] <- ARI_j
     }
-
   }
 
   message("Matrix calculated")
 
-    # turning the matrix upper-triangular
-    ARI[upper.tri(ARI)] <- NA
+  # turning the matrix upper-triangular
+  ARI[upper.tri(ARI)] <- NA
 
-    # setting diags to 1
-    diag(ARI) <- NA
+  # setting diags to 1
+  diag(ARI) <- NA
 
-    # taking average
-    avg <- mean(ARI[!is.na(ARI)])
+  # taking average
+  avg <- round(mean(ARI[!is.na(ARI)]), digits = 2)
 
-    # plotting matrix
-    plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
-      geom_tile(color = "white") +
-      geom_text(aes(label = round(value, 2), fontface = "bold"), color = "black") +
-      theme_bw() +
-      scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
-      labs(x = "Sample #", y = "Sample #",
-           title = "ARI Matrix",
-           subtitle = paste0("average = ", avg)) +
-      theme(plot.title = element_text(face = "bold"))
+  # plotting matrix
+  plot <- ggplot(melt(ARI), aes(x = Var1, y = Var2, fill = value)) +
+    geom_tile(color = "white") +
+    geom_text(aes(label = round(value, 2), fontface = "bold"), color = "black") +
+    theme_bw() +
+    scale_fill_gradient2(name = "ARI", limits = c(0, 1)) +
+    labs(x = "Sample #", y = "Sample #",
+          title = "ARI Matrix",
+          subtitle = paste0("average = ", avg)) +
+    theme(plot.title = element_text(face = "bold"))
 
-
-    # appending to list
-    result <- list(average = avg, matrix = plot, values = ARI)
+  # appending to list
+  result <- list(average = avg, matrix = plot, values = ARI)
 
   return(result)
 

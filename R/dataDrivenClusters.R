@@ -47,6 +47,7 @@
 #' @export
 
 
+
 dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 2,
                                region = NULL) {
 
@@ -68,8 +69,8 @@ dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 
   voxel_df <- voxel_df_long %>%
     tidyr::pivot_wider(names_from = "pid", values_from = "value")
   voxel_df <- voxel_df[, colSums(voxel_df) != 0]
-  xyz <- voxel_df[, 1:3]
-  voxel_df <- voxel_df[, 4:ncol(voxel_df)]
+  xyz <- voxel_df[c("x", "y", "z")]
+  voxel_df <- select(voxel_df, -c("x", "y", "z"))
 
   # scale the data
   voxel_df <- scale(voxel_df, center = TRUE, scale = TRUE)
@@ -117,7 +118,7 @@ dataDrivenClusters <- function(voxel_df_long, n_pca = 20, n_umap = 2, n_clust = 
     result <- list(data_df = data_df)
   }
 
-  # the return object will consist just data_df
+  # the return object will consist of just data_df
   return(result)
   }
 }
