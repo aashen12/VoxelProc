@@ -29,10 +29,18 @@
 #'
 #' @import entropy
 #'
+#' @return A tibble with the following components:
+#' \describe{
+#' \item{pid}{a column indicating patient identification}
+#' \item{cluster}{a column indicating which cluster the entropy is being
+#' calculated from. This component will be missing if \code{data_df} is \code{null}.}
+#' \item{entropy}{column indicating the calculated entropy of the patient}
+#' }
+#'
 #' @export
 
 
-computeRegionEntropy <- function(voxel_df, data_df) {
+computeRegionEntropy <- function(voxel_df, data_df = NULL) {
 
   if (!is.null(data_df)) {
   combine_df <- cbind(voxel_df, data_df[, 4:6]) %>% tibble()
@@ -44,8 +52,11 @@ computeRegionEntropy <- function(voxel_df, data_df) {
     mutate(avg_vox = mean(nvox)) %>%
     group_by(pid, cluster) %>%
     summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(avg_vox[1]))))
-    )
+    ) %>%
+    pivot_wider(names_from = "cluster", values_from = "entropy",
+                names_prefix = "entropy_c")
   }
+
 
   else {
   result <- voxel_df %>%
