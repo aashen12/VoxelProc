@@ -95,7 +95,7 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
     # run dataDrivenClusters() with specified values
     DDC <- suppressMessages(dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
                                                n_clust = n_clust, region = region))
-    clusters <- DDC$data_df[, 6]
+    clusters <- DDC$data_df["cluster"]
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters

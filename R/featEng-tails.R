@@ -56,7 +56,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
     if (!is.null(data_df)) {
 
       # cbind voxel_df and data_df
-      combine_df <- cbind(voxel_df, data_df[, 4:6])
+      combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")])
 
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
