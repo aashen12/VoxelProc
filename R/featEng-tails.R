@@ -56,12 +56,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
     if (!is.null(data_df)) {
 
       # cbind voxel_df and data_df
-<<<<<<< HEAD
       combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")])
-=======
-      # For Jonathan: remove dependency on numeric column indexing
-      combine_df <- cbind(voxel_df, data_df[, 4:6])
->>>>>>> d2e5cb78a0084263d3188199fd67cec202222f5b
 
       #removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
@@ -83,15 +78,10 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
                                                        "upper_quantile",
                                                        "lower_quantile",
                                                        "mean_upper",
-<<<<<<< HEAD
-                                                       "mean_lower")]
-    }
-=======
                                                        "mean_lower")] %>%
           pivot_wider(names_from = "cluster",
                       values_from = c("upper_quantile", "lower_quantile", "mean_upper", "mean_lower"))
   }
->>>>>>> d2e5cb78a0084263d3188199fd67cec202222f5b
 
     else {
 
