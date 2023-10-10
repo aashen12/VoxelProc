@@ -56,6 +56,7 @@ computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
     if (!is.null(data_df)) {
 
       # cbind voxel_df and data_df
+      # For Jonathan: remove dependency on numeric column indexing
       combine_df <- cbind(voxel_df, data_df[, 4:6])
 
       #removing x, y, z columns since those are redundant after the xyz column.
