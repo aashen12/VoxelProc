@@ -34,6 +34,9 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
 
   # note: still need to generalize this to more colnames.
   if (!is.null(id_mapping)) {
+  id_index <- grep(match, colnames(id_mapping))
+  id_mapping[, id_index] <- as.factor(id_mapping[, id_index])
+  feat_eng_df$pid <- as.factor(feat_eng_df$pid)
   id_mapping <- id_mapping %>% rename("pid" = match)
   df_merged <- left_join(feat_eng_df, id_mapping, by = "pid") %>%
     dplyr::relocate(PatID, .after = "pid")
@@ -46,6 +49,7 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
   colnames(clinical_data)[1] <- "pid"
   result <- left_join(clinical_data, feat_eng_df, by = "pid") %>%
     tidyr::drop_na(pid)
+  result$PatID <- as.factor(result$PatID)
   }
 
   return(result)
