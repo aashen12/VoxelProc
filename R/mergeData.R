@@ -59,7 +59,7 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
   feat_eng_df$pid <- as.factor(feat_eng_df$pid)
   result <- left_join(clinical_data, feat_eng_df, by = "pid") %>%
     tidyr::drop_na(pid)
-  result$PatID <- as.factor(result$PatID)
+  result$pid <- as.factor(result$pid)
   }
 
   return(result)
