@@ -4,9 +4,9 @@
 #' by resampling the voxel data set and using the adjusted Rand Index to compare
 #' cluster values.
 #'
-#' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df}
+#' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df_long}
 #' according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
-#' on these parameters, a certain proportion of the patients in \code{voxel_df}
+#' on these parameters, a certain proportion of the patients in \code{voxel_df_long}
 #' will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
 #' After running \code{dataDrivenClusters} on the subsets, the cluster
 #' labels will be extracted for each resample. \code{resampleClusteringRegions()}
@@ -138,6 +138,9 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
           title = "ARI Matrix",
           subtitle = paste0("average = ", avg)) +
     theme(plot.title = element_text(face = "bold"))
+
+  remove(voxel_df_long)
+  remove(voxel_df)
 
   # appending to list
   result <- list(average = avg, matrix = plot, values = ARI)
