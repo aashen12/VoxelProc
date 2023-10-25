@@ -17,6 +17,3 @@ computeRegionMedian <- function(voxel_df, data_df = NULL) {
 
   return(result)
 }
-
-
-
