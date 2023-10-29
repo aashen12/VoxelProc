@@ -37,12 +37,12 @@ computeFeatures <- function(voxel_df,
                                       as.character(epsilon),
                                       ",",
                                       "data_df)")))
-        desired_columns <- df[, !names(df) %in% "pid"]
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
         feat_df <- cbind(feat_df, desired_columns)
       }
       else{
         df <- eval(parse(text = paste(fun, "(voxel_df, data_df)")))
-        desired_columns <- df[, !names(df) %in% "pid"]
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
         feat_df <- cbind(feat_df, desired_columns)
       }
     }
