@@ -21,7 +21,6 @@ computeFeatures <- function(voxel_df,
         feat_df <- df
         i <- i + 1
       }
-
       else{
         df <- eval(parse(text = paste(fun, "(voxel_df, data_df)")))
         feat_df <- df
