@@ -4,8 +4,6 @@ computeFeatures <- function(voxel_df,
                             base = 1,
                             epsilon = 0.05,
                             data_df = NULL) {
-
-  feat_df <- data.frame(matrix(nrow = length(unique(voxel_df$pid)), ncol = 0))
   i <- 1
   for (fun in methods) {
     if (i == 1) {
