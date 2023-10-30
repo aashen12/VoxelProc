@@ -19,6 +19,8 @@ Imports:
   reshape2,
   entropy,
   tidyr,
+  moments,
+  rlang,
   umap
 Suggests:
     testthat (>= 3.0.0),
