@@ -1,4 +1,6 @@
 #' @import moments
+#'
+#' @export
 
 computeRegionSkewness <- function(voxel_df, data_df = NULL) {
 

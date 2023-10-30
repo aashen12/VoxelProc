@@ -1,3 +1,5 @@
+#' @export
+
 computeRegionProp <- function(voxel_df, base = 1, epsilon = 0.05, data_df = NULL) {
 
   if (!is.null(data_df)) {

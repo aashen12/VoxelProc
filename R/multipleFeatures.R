@@ -1,4 +1,6 @@
 #' @import rlang
+#'
+#' @export
 computeFeatures <- function(voxel_df,
                             methods = c("computeRegionEntropy", "computeRegionProp"),
                             base = 1,
