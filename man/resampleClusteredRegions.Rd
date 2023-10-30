@@ -5,7 +5,7 @@
 \title{resampleClusteredRegions}
 \usage{
 resampleClusteredRegions(
-  voxel_df,
+  voxel_df_long,
   n_pca = 20,
   n_umap = 2,
   n_clust = 2,
@@ -15,10 +15,6 @@ resampleClusteredRegions(
 )
 }
 \arguments{
-\item{voxel_df}{A \code{list} or \code{matrix} object that represents voxel data.
-The first three columns should be coordinate data, while the rest of the
-columns represent voxel data.}
-
 \item{n_pca}{A \code{numeric} that indicates how many principal components
 will be used in the pipeline. Default is set to 20.}
 
@@ -36,6 +32,10 @@ will be resampled at each iteration of \code{resampleClusteredRegions}.}
 
 \item{region}{A \code{character} that indicates which region of the brain the
 pipeline will be run on. Default is set to \code{NULL}.}
+
+\item{voxel_df}{A \code{list} or \code{matrix} object that represents voxel data.
+The first three columns should be coordinate data, while the rest of the
+columns represent voxel data.}
 }
 \value{
 A list with the following components:
@@ -52,13 +52,11 @@ by resampling the voxel data set and using the adjusted Rand Index to compare
 cluster values.
 }
 \details{
-\code{resampleClusteringRegions} randomly resamples \code{voxel_df}
+\code{resampleClusteringRegions} randomly resamples \code{voxel_df_long}
 according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
-on these parameters, a certain proportion of the columns of \code{voxel_df}
+on these parameters, a certain proportion of the patients in \code{voxel_df_long}
 will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
-In particular, the resampling will be performed only on columns 4 to \code{ncol(voxel_df)}
-of \code{voxel_df}, since the first three columns should be the 'x', 'y',  and 'z'
-coordinates. After running \code{dataDrivenClusters} on the subsets, the cluster
+After running \code{dataDrivenClusters} on the subsets, the cluster
 labels will be extracted for each resample. \code{resampleClusteringRegions()}
 then uses the adjusted Rand Index to find how similar each pair of clusterings are to
 each other. The function then averages the pairwise adjusted Rand indices as

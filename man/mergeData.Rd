@@ -11,14 +11,16 @@ mergeData(feat_eng_df, clinical_data, match = "ScrID", id_mapping = NULL)
 \code{computeRegionEntropy()}.}
 
 \item{match}{A \code{character} indicating which column name corresponds to
-the identificaton seen in \code{feat_eng_df} and \code{id_mapping}}
+the identificaton seen in \code{feat_eng_df} and \code{id_mapping}.}
 
-\item{id_mapping}{A \code{dataframe} that has at least the columns 'PatID' and
-match, the latter of which is an argument in the function. If 'match' is not
-specified, then the function will assume that 'ScrID' is the second column name.}
+\item{id_mapping}{A \code{dataframe} that has at least the columns 'match' and
+the patient ID seen in \code{clinical_data}, the former of which is an argument
+in the function. If 'match' is not specified, then the function will assume that '
+ScrID' is the first column name.}
 
 \item{test_clinical_data}{A \code{dataframe} that includes the clinical data
-of the patients.}
+of the patients. It is expected for the first column to be a patient
+identification column.}
 }
 \value{
 A \code{tibble} that outputs the original clinical dataframe with an
