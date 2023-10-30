@@ -9,7 +9,10 @@ computeRegionSkewness <- function(voxel_df, data_df = NULL) {
     result <- combine_df %>%
       mutate_at(vars("cluster"), factor) %>%
       group_by(pid, cluster) %>%
-      summarize(skewness = skewness(value))
+      summarize(skewness = skewness(value)) %>%
+      pivot_wider(names_from = "cluster",
+                  values_from = "skewness",
+                  names_prefix = "skewness_c")
   }
 
 

@@ -7,7 +7,10 @@ computeRegionProp <- function(voxel_df, base = 1, epsilon = 0.05, data_df = NULL
     result <- combine_df %>%
       mutate_at(vars("cluster"), factor) %>%
       group_by(pid, cluster) %>%
-      summarize(proportion = sum(value >= base - epsilon & value <= base + epsilon)/length(value))
+      summarize(proportion = sum(value >= base - epsilon & value <= base + epsilon)/length(value)) %>%
+      pivot_wider(names_from = "cluster",
+                  values_from = "proportion",
+                  names_prefix = "proportion_c")
   }
 
 
