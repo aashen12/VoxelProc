@@ -15,16 +15,15 @@
 #' the observations come from the same cluster.
 #'
 #' @param voxel_df A \code{dataframe} in the following format: the first column
-#' is assumed to be an index column counting from 1 to \code{nrow(voxel_df)},
-#' and the second column is a column labeled "PID," which contains patient
-#' identification. The third, fourth, and fifth columns are 'x', 'y', and 'z'
-#' columns. The sixth column contains the value of the voxel that corresponds
+#' is assumed to be a column labeled "PID," which contains patient
+#' identification. The second, third, and fourth columns are 'x', 'y', and 'z'
+#' columns. The fifth column contains the value of the voxel that corresponds
 #' with the given x-y-z coordinate.
 #' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 #' This tibble should be in the following format: the first three columns are
 #' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
 #' UMAP coordinates, and the fifth column contains cluster labels. If this is
-#' equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
+#' equal to \code{NULL}, \code{computeRegionEntropy()} will assume that all data comes
 #' from the same cluster.
 #'
 #' @import entropy
@@ -32,9 +31,8 @@
 #' @return A tibble with the following components:
 #' \describe{
 #' \item{pid}{a column indicating patient identification}
-#' \item{cluster}{a column indicating which cluster the entropy is being
-#' calculated from. This component will be missing if \code{data_df} is \code{null}.}
-#' \item{entropy}{column indicating the calculated entropy of the patient}
+#' \item{entropy_c}{columns indicating the calculated entropy of the patient for
+#' the cluster that is specified.}
 #' }
 #'
 #' @export
