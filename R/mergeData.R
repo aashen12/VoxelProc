@@ -13,9 +13,9 @@
 #' then 'pid' will be used as the common identification between \code{feat_eng_df}
 #' and \code{clinical_data}.
 #'
-#' @param feat_eng_df A \code{tibble} that takes the same form as an output of
-#' \code{computeRegionEntropy()}.
-#' @param test_clinical_data A \code{dataframe} that includes the clinical data
+#' @param feat_eng_df A \code{tibble} that takes the same form as an output of any of
+#' the feature engineering functions in VoxelProc.
+#' @param clinical_data A \code{dataframe} that includes the clinical data
 #' of the patients. It is expected for the first column to be a patient
 #' identification column.
 #' @param match A \code{character} indicating which column name corresponds to
@@ -26,7 +26,7 @@
 #' ScrID' is the first column name.
 #'
 #' @returns A \code{tibble} that outputs the original clinical dataframe with an
-#' added entropy column.
+#' added feature column.
 #'
 #' @import tidyr
 #'
@@ -38,7 +38,7 @@ mergeData <- function(feat_eng_df, clinical_data, match = "ScrID", id_mapping = 
 
   # converting literally everything into a factor
   id_index <- grep(match, colnames(id_mapping))
-  id_mapping[, id_index] <- as.factor(id_mapping[, id_index])
+  id_mapping[, id_index][[1]] <- as.factor(id_mapping[, id_index][[1]])
   feat_eng_df$pid <- as.factor(feat_eng_df$pid)
   clinical_data[[1]] <- as.factor(clinical_data[[1]])
 
