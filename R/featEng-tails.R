@@ -44,7 +44,7 @@
 #'
 #' @export
 
-computeTailMeans <- function(voxel_df, data_df = NULL, alpha = 0.05) {
+computeTailMeans <- function(voxel_df, alpha = 0.05, data_df = NULL) {
 
   # assuming long format voxel_df in which column 1 is index, column 2 is PID,
   # column 3-5 is x,y,z, and column 6 is value. Assuming data_df to be output

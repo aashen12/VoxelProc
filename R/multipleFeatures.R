@@ -48,6 +48,7 @@ computeFeatures <- function(voxel_df,
                             methods = c("computeRegionEntropy", "computeRegionProp"),
                             base = 1,
                             epsilon = 0.05,
+                            alpha = 0.05,
                             data_df = NULL) {
   i <- 1
   for (fun in methods) {
@@ -59,6 +60,16 @@ computeFeatures <- function(voxel_df,
                                       as.character(base),
                                       ",",
                                       as.character(epsilon),
+                                      ",",
+                                      "data_df)")))
+        feat_df <- df
+        i <- i + 1
+      }
+      else if (fun == "computeTailMeans") {
+        df <- eval(parse(text = paste(fun,
+                                      "(voxel_df",
+                                      ",",
+                                      as.character(alpha),
                                       ",",
                                       "data_df)")))
         feat_df <- df
@@ -83,6 +94,16 @@ computeFeatures <- function(voxel_df,
         desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
         feat_df <- cbind(feat_df, desired_columns)
       }
+      else if (fun == "computeTailMeans") {
+        df <- eval(parse(text = paste(fun,
+                                      "(voxel_df",
+                                      ",",
+                                      as.character(alpha),
+                                      ",",
+                                      "data_df)")))
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
+        feat_df <- cbind(feat_df, desired_columns)
+      }
       else{
         df <- eval(parse(text = paste(fun, "(voxel_df, data_df)")))
         desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
@@ -90,6 +111,6 @@ computeFeatures <- function(voxel_df,
       }
     }
   }
-  feat_df <- feat_df %>% tibble()
+  feat_df <- tibble(feat_df)
   return(feat_df)
 }
