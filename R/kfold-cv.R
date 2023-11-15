@@ -3,8 +3,6 @@
 crossValidation <- function(clinical_data,
                             k = 5,
                             method = "coxph",
-                            time = "time",
-                            status = "status",
                             proportion = 0.8) {
 
   df <- clinical_data[-1]
