@@ -1,14 +1,23 @@
 #' @import ISLR
 
-crossValidation <- function(voxel_df, k = 10) {
-  voxel_df_wide <- voxel_df %>%
-    tidyr::pivot_wider(names_from = "pid", values_from = "value")
+crossValidation <- function(clinical_data,
+                            k = 5,
+                            method = "coxph",
+                            time = "time",
+                            status = "status",
+                            proportion = 0.8) {
 
-  cv.error <- c()
+  df <- clinical_data[-1]
+
   for (i in 1:k) {
-    glm.fit <- glm(dependentvariable ~ poly(independentvariable, i), data = data)
-    cv.error <- c(cv.error, cv.glm(data, glm.fit, K = k)$delta[1])
+    inTrain <- createDataPartition(y = clinical_data$time,
+                                   p = proportion,
+                                   list = FALSE)
+    train <- df[inTrain, ]
+    test <- df[-inTrain, ]
+    coxph_model <- coxph(Surv(time, status) ~., data = train)
+    test_pred <- coxph_model %>% predict(test)
+    # do something for concordance index
   }
 
-  return(cv.error)
 }
