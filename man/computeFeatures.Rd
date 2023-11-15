@@ -9,6 +9,7 @@ computeFeatures(
   methods = c("computeRegionEntropy", "computeRegionProp"),
   base = 1,
   epsilon = 0.05,
+  alpha = 0.05,
   data_df = NULL
 )
 }

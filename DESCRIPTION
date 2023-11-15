@@ -21,7 +21,11 @@ Imports:
   tidyr,
   moments,
   rlang,
-  umap
+  umap,
+  ISLR,
+  caret,
+  survival,
+  survcomp
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
