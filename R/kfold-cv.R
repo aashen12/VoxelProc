@@ -2,6 +2,7 @@
 #' @import caret
 #' @import survival
 #' @import survcomp
+#' @import glmnet
 
 crossValidation <- function(clinical_data,
                             k = 5,
@@ -26,30 +27,32 @@ crossValidation <- function(clinical_data,
     result <- cvector()
   }
   else if (method == "LASSO") {
-    scale_data <- scale(df, center = TRUE)
-    covariates.w.time <- scale_data[, -which(names(scale_data) %in% c("status"))]
-    status <- scale_data["status"]
-    cvfit <- cv.glmnet(covariates.w.time,
-                       status,
+    df <- df %>% select(where(is.numeric))
+    scale_data <- as.data.frame(scale(df, center = TRUE))
+    covariates <- scale_data[, -which(names(scale_data) %in% c("status", "time"))] %>% as.matrix()
+    status <- df["status"][[1]]
+    time <- df["time"][[1]]
+    cvfit <- cv.glmnet(covariates,
+                       Surv(time, status),
                        nfolds = k,
                        alpha = 1,
                        family = "cox",
                        type.measure = "C")
-    cverror <- cvfit$cvm
-    result <- cverror
+    result <- cvfit
   }
   else if (method == "Ridge") {
+    df <- df %>% select(where(is.numeric))
     scale_data <- scale(df, center = TRUE)
-    covariates.w.time <- scale_data[, -which(names(scale_data) %in% c("status"))]
-    status <- scale_data["status"]
-    cvfit <- cv.glmnet(covariates.w.time,
+    covariates <- scale_data[, -which(names(scale_data) %in% c("status", "time"))] %>% as.matrix()
+    status <- df["status"][[1]]
+    time <- df["time"][[1]]
+    cvfit <- cv.glmnet(covariates,
                        status,
                        nfolds = k,
                        alpha = 0,
                        family = "cox",
                        type.measure = "C")
-    cverror <- cvfit$cvm
-    result <- cverror
+    result <- cvfit
   }
   return(result)
 }

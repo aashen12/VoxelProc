@@ -25,7 +25,8 @@ Imports:
   ISLR,
   caret,
   survival,
-  survcomp
+  survcomp,
+  glmnet
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
