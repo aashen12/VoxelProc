@@ -9,22 +9,28 @@ crossValidation <- function(clinical_data,
                             method = "coxph") {
 
   df <- clinical_data[-1]
+  covariates <- clinical_data[, -which(names(df) %in% c("time", "status"))]
   proportion <- 1-1/k
 
   if (method == "coxph") {
     cvector <- c()
-    for (i in 1:k) {
-      inTrain <- createDataPartition(y = df$time,
-                                    p = proportion,
-                                    list = FALSE)
-      train <- df[inTrain, ]
-      test <- df[-inTrain, ]
-      coxph_model <- coxph(Surv(time, status) ~., data = train)
-      test_pred <- coxph_model %>% predict(test)
-      cindex <- concordance.index(test_pred, test$time, test$status)
-      cvector <- c(cvector, cindex)
+    covar_names <- colnames(covariates)
+    for (j in 1:ncol(covariates)) {
+      include <- covar_names[1:j]
+      mini_df <- df[, which(names(df) %in% c(include, "time", "status"))]
+      for (i in 1:k) {
+        inTrain <- createDataPartition(y = mini_df$time,
+                                       p = proportion,
+                                       list = FALSE)
+        train <- mini_df[inTrain, ]
+        test <- mini_df[-inTrain, ]
+        coxph_model <- coxph(Surv(time, status) ~., data = train)
+        test_pred <- coxph_model %>% predict(test)
+        cindex <- concordance.index(test_pred, test$time, test$status)
+        cvector <- c(cvector, cindex)
+      }
+      result <- cvector()
     }
-    result <- cvector()
   }
   else if (method == "LASSO") {
     df <- df %>% select(where(is.numeric))
