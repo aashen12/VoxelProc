@@ -9,7 +9,7 @@ crossValidation <- function(clinical_data,
                             method = "coxph") {
 
   df <- clinical_data[-1]
-  covariates <- clinical_data[, -which(names(df) %in% c("time", "status"))]
+  covariates <- df[, -which(names(df) %in% c("time", "status"))]
   proportion <- 1-1/k
 
   if (method == "coxph") {
@@ -30,7 +30,7 @@ crossValidation <- function(clinical_data,
         cindex <- concordance.index(test_pred, test$time, test$status)
         cvector <- c(cvector, cindex)
       }
-      i_score <- mean(cvector)
+      i_score <- 1/mean(cvector)
       score <- c(score, i_score)
     }
     best_index <- which(score == min(score))
