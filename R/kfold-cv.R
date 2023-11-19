@@ -7,7 +7,6 @@
 crossValidation <- function(clinical_data,
                             k = 5,
                             method = "coxph") {
-
   df <- clinical_data[-1]
   proportion <- 1-1/k
 
@@ -27,7 +26,6 @@ crossValidation <- function(clinical_data,
     result <- list(score = mean(cvector),
                    concordances = cvector,
                    sd = sd(cvector))
-
   }
 
   else if (method == "LASSO") {
@@ -42,7 +40,9 @@ crossValidation <- function(clinical_data,
                        alpha = 1,
                        family = "cox",
                        type.measure = "C")
-    result <- cvfit
+    result <- list(score = mean(cvfit$cvm),
+                   concordances = cvfit$cvm,
+                   sd = sd(cvfit$cvm))
   }
   else if (method == "Ridge") {
     df <- df %>% select(where(is.numeric))
@@ -56,7 +56,9 @@ crossValidation <- function(clinical_data,
                        alpha = 0,
                        family = "cox",
                        type.measure = "C")
-    result <- cvfit
+    result <- list(score = mean(cvfit$cvm),
+                   concordances = cvfit$cvm,
+                   sd = sd(cvfit$cvm))
   }
   return(result)
 }
