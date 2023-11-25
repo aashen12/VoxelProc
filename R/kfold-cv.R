@@ -6,12 +6,13 @@
 
 crossValidation <- function(clinical_data,
                             k = 5,
-                            method = "coxph") {
-  df <- clinical_data[-1]
+                            n = 5,
+                            method = "coxph",
+                            id = "pid") {
+  df <- clinical_data[, !names(clinical_data) %in% id]
   proportion <- 1-1/k
-
   if (method == "coxph") {
-    cvector <- c()
+    cvector <- rep(NA, k)
     for (i in 1:k) {
       inTrain <- createDataPartition(y = df$time,
                                     p = proportion,
@@ -21,14 +22,13 @@ crossValidation <- function(clinical_data,
       coxph_model <- coxph(Surv(time, status) ~., data = train)
       test_pred <- coxph_model %>% predict(test)
       cindex <- concordance.index(test_pred, test$time, test$status)$c.index
-      cvector <- c(cvector, cindex)
+      cvector[i] <- cindex
     }
     result <- list(score = mean(cvector),
                    concordances = cvector,
                    sd = sd(cvector))
   }
-
-  else if (method == "LASSO") {
+  else if (method == "lasso") {
     df <- df %>% select(where(is.numeric))
     scale_data <- as.data.frame(scale(df, center = TRUE))
     covariates <- scale_data[, -which(names(scale_data) %in% c("status", "time"))] %>% as.matrix()
