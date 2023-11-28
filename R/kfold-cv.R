@@ -3,12 +3,13 @@
 #' @import survival
 #' @import survcomp
 #' @import glmnet
+#' @import fastDummies
 
 crossValidation <- function(clinical_data,
                             k = 5,
                             n = 5,
                             method = "coxph",
-                            id = "pid") {
+                            id = "PatID") {
   df <- clinical_data[, !names(clinical_data) %in% id]
   proportion <- 1-1/k
   if (method == "coxph") {
@@ -34,12 +35,14 @@ crossValidation <- function(clinical_data,
                    sd = sd(scores))
   }
   else if (method == "lasso") {
-    df <- df %>% select(where(is.numeric))
+    df <- df %>% dummy_cols(remove_selected_columns = TRUE)
     status_time_col <- df[c("time", "status")]
     rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
     scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
     scale_data_full <- cbind(scale_data, status_time_col)
+    cindex_list <- list()
     for (j in 1:n) {
+      cvector <- rep(NA, k)
       for (i in 1:k) {
         inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
                                        p = proportion,
@@ -47,41 +50,57 @@ crossValidation <- function(clinical_data,
         train <- scale_data_full[inTrain, ]
         test <- scale_data_full[-inTrain, ]
         test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
+        train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
         time <- train["time"][[1]]
         status <- train["status"][[1]]
-        covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
-        cvfit <- cv.glmnet(covariates,
+        cvfit <- cv.glmnet(train_covariates,
                        Surv(time, status),
                        nfolds = k,
                        alpha = 1,
                        family = "cox",
                        type.measure = "C")
         lambda <- cvfit$lambda.min
-        trained_model <- glmnet(covariates,
-                                Surv(time, status),
-                                family = "cox",
-                                alpha = 1,
-                                lambda = lambda)
-        test_pred <- trained_model %>% predict(test_covariates)
-
+        test_pred <- predict(cvfit, test_covariates, s = lambda)
+        cindex <- concordance.index(test_pred, test$time, test$status)$c.index
+        cvector[i] <- cindex
       }
+      cindex_list[[j]] <- cvector
     }
+    result <- cindex_list
   }
   else if (method == "Ridge") {
-    df <- df %>% select(where(is.numeric))
-    scale_data <- as.data.frame(scale(df, center = TRUE))
-    covariates <- scale_data[, -which(names(scale_data) %in% c("status", "time"))] %>% as.matrix()
-    status <- df["status"][[1]]
-    time <- df["time"][[1]]
-    cvfit <- cv.glmnet(covariates,
-                       Surv(time, status),
-                       nfolds = k,
-                       alpha = 0,
-                       family = "cox",
-                       type.measure = "C")
-    result <- list(score = mean(cvfit$cvm),
-                   concordances = cvfit$cvm,
-                   sd = sd(cvfit$cvm))
+    df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    status_time_col <- df[c("time", "status")]
+    rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
+    scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
+    scale_data_full <- cbind(scale_data, status_time_col)
+    cindex_list <- list()
+    for (j in 1:n) {
+      cvector <- rep(NA, k)
+      for (i in 1:k) {
+        inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
+                                       p = proportion,
+                                       list = FALSE)
+        train <- scale_data_full[inTrain, ]
+        test <- scale_data_full[-inTrain, ]
+        test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
+        train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
+        time <- train["time"][[1]]
+        status <- train["status"][[1]]
+        cvfit <- cv.glmnet(train_covariates,
+                           Surv(time, status),
+                           nfolds = k,
+                           alpha = 0,
+                           family = "cox",
+                           type.measure = "C")
+        lambda <- cvfit$lambda.min
+        test_pred <- predict(cvfit, test_covariates, s = lambda)
+        cindex <- concordance.index(test_pred, test$time, test$status)$c.index
+        cvector[i] <- cindex
+      }
+      cindex_list[[j]] <- cvector
+    }
+    result <- cindex_list
   }
   return(result)
 }
