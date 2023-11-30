@@ -43,6 +43,9 @@ crossValidation <- function(clinical_data,
     cindex_list <- list()
     for (j in 1:n) {
       cvector <- rep(NA, k)
+      sd <- rep(NA, k)
+      lower <- rep(NA, k)
+      upper <- rep(NA, k)
       for (i in 1:k) {
         inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
                                        p = proportion,
@@ -54,21 +57,34 @@ crossValidation <- function(clinical_data,
         time <- train["time"][[1]]
         status <- train["status"][[1]]
         cvfit <- cv.glmnet(train_covariates,
-                       Surv(time, status),
-                       nfolds = k,
-                       alpha = 1,
-                       family = "cox",
-                       type.measure = "C")
+                           Surv(time, status),
+                           nfolds = k,
+                           alpha = 1,
+                           family = "cox",
+                           type.measure = "C")
         lambda <- cvfit$lambda.min
         test_pred <- predict(cvfit, test_covariates, s = lambda)
-        cindex <- concordance.index(test_pred, test$time, test$status)$c.index
+        concordance <- concordance.index(test_pred, test$time, test$status)
+        cindex <- concordance$c.index
+        sdindex <- concordance$se
+        lowerindex <- concordance$lower
+        upperindex <- concordance$upper
         cvector[i] <- cindex
+        sd[i] <- sdindex
+        lower[i] <- lowerindex
+        upper[i] <- upperindex
       }
-      cindex_list[[j]] <- cvector
+      clist <- list(c.indices = cvector,
+                    sd.indices = sdindex,
+                    lowers = lowerindex,
+                    uppers = upperindex,
+                    sd = sd(cvector),
+                    mean = mean(cvector))
+      cindex_list[[j]] <- clist
     }
     result <- cindex_list
   }
-  else if (method == "Ridge") {
+  else if (method == "ridge") {
     df <- df %>% dummy_cols(remove_selected_columns = TRUE)
     status_time_col <- df[c("time", "status")]
     rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
@@ -77,6 +93,9 @@ crossValidation <- function(clinical_data,
     cindex_list <- list()
     for (j in 1:n) {
       cvector <- rep(NA, k)
+      sd <- rep(NA, k)
+      lower <- rep(NA, k)
+      upper <- rep(NA, k)
       for (i in 1:k) {
         inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
                                        p = proportion,
@@ -95,10 +114,23 @@ crossValidation <- function(clinical_data,
                            type.measure = "C")
         lambda <- cvfit$lambda.min
         test_pred <- predict(cvfit, test_covariates, s = lambda)
-        cindex <- concordance.index(test_pred, test$time, test$status)$c.index
+        concordance <- concordance.index(test_pred, test$time, test$status)
+        cindex <- concordance$c.index
+        sdindex <- concordance$se
+        lowerindex <- concordance$lower
+        upperindex <- concordance$upper
         cvector[i] <- cindex
+        sd[i] <- sdindex
+        lower[i] <- lowerindex
+        upper[i] <- upperindex
       }
-      cindex_list[[j]] <- cvector
+      clist <- list(c.indices = cvector,
+                    sd.indices = sdindex,
+                    lowers = lowerindex,
+                    uppers = upperindex,
+                    sd = sd(cvector),
+                    mean = mean(cvector))
+      cindex_list[[j]] <- clist
     }
     result <- cindex_list
   }
