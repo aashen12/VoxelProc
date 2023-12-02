@@ -22,7 +22,7 @@
 #' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 #' This tibble should be in the following format: the first three columns are
 #' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
-#' UMAP coordinates, and the fifth column contains cluster labels. If this is
+#' UMAP coordinates, and the sixth column contains cluster labels. If this is
 #' equal to \code{NULL}, \code{computeRegionMedian()} will assume that all data comes
 #' from the same cluster.
 #'
@@ -39,21 +39,21 @@
 computeRegionMedian <- function(voxel_df, data_df = NULL) {
 
   if (!is.null(data_df)) {
-    combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")]) %>% tibble()
+    combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")]) %>% tibble() # extracting the UMAP coordinates and cluster labels, then appending to voxel_df
     result <- combine_df %>%
       mutate_at(vars("cluster"), factor) %>%
       group_by(pid, cluster) %>%
-      summarize(median = median(value)) %>%
+      summarize(median = median(value)) %>% # obtaining median according to cluster and pid
       pivot_wider(names_from = "cluster",
                   values_from = "median",
-                  names_prefix = "median_c")
+                  names_prefix = "median_c") # reformatting the tibble to be in wide-format
   }
 
 
   else {
     result <- voxel_df %>%
       group_by(pid) %>%
-      summarize(median = median(value))
+      summarize(median = median(value)) # if data_df is not provided, we don't take into consideration the cluster labels and calculate median directly on each pid
   }
 
   return(result)

@@ -23,7 +23,7 @@
 #' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 #' This tibble should be in the following format: the first three columns are
 #' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
-#' UMAP coordinates, and the fifth column contains cluster labels. If this is
+#' UMAP coordinates, and the sixth column contains cluster labels. If this is
 #' equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
 #' from the same cluster.
 #' @param alpha A \code{double} that indicates what quantiles should be extracted
@@ -58,34 +58,37 @@ computeTailMeans <- function(voxel_df, alpha = 0.05, data_df = NULL) {
       # cbind voxel_df and data_df
       combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")])
 
-      #removing x, y, z columns since those are redundant after the xyz column.
+      # removing x, y, z columns since those are redundant after the xyz column.
       combine_df <- combine_df[c("pid", "value", "cluster")]
 
-        quantile_summary <- combine_df %>%
-          group_by(pid, cluster) %>%
-          summarise(upper_quantile = quantile(value, 1-alpha), lower_quantile = quantile(value, alpha))
+      # obtaining quantiles with cutoff 1-alpha and alpha
+      quantile_summary <- combine_df %>%
+        group_by(pid, cluster) %>%
+        summarise(upper_quantile = quantile(value, 1-alpha), lower_quantile = quantile(value, alpha))
 
+      # obtaining mean of values above and below the cutoffs
+      mean_summary <- combine_df %>%
+        group_by(pid, cluster) %>%
+        summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
+                  mean_lower = mean(value[value < quantile(value, alpha)]))
 
-        mean_summary <- combine_df %>%
-          group_by(pid, cluster) %>%
-          summarise(mean_upper = mean(value[value > quantile(value, 1-alpha)]),
-                    mean_lower = mean(value[value < quantile(value, alpha)]))
+      # extracting the relevant columns from mean_summary
+      mean_cols <- mean_summary[c("mean_upper", "mean_lower")]
 
-        mean_cols <- mean_summary[c("mean_upper", "mean_lower")]
-
-        result <- cbind(quantile_summary, mean_cols)[c("pid",
-                                                       "cluster",
-                                                       "upper_quantile",
-                                                       "lower_quantile",
-                                                       "mean_upper",
-                                                       "mean_lower")] %>%
-          pivot_wider(names_from = "cluster",
-                      values_from = c("upper_quantile", "lower_quantile", "mean_upper", "mean_lower"))
+      # appending together the correct columns in the right order
+      result <- cbind(quantile_summary, mean_cols)[c("pid",
+                                                      "cluster",
+                                                      "upper_quantile",
+                                                      "lower_quantile",
+                                                      "mean_upper",
+                                                      "mean_lower")] %>%
+      pivot_wider(names_from = "cluster",
+                  values_from = c("upper_quantile", "lower_quantile", "mean_upper", "mean_lower")) # pivoting the tibble into wide format
   }
 
     else {
 
-      new_df <- voxel_df[c("pid", "value")]
+      new_df <- voxel_df[c("pid", "value")] # without data_df, simply follow the same procedure as what is done above, but don't take into consideration a possible cluster label
 
       upper_summary <- cbind(new_df %>%
         group_by(pid) %>%

@@ -22,7 +22,7 @@
 #' @param data_df A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 #' This tibble should be in the following format: the first three columns are
 #' assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
-#' UMAP coordinates, and the fifth column contains cluster labels. If this is
+#' UMAP coordinates, and the sixth column contains cluster labels. If this is
 #' equal to \code{NULL}, \code{computeRegionEntropy()} will assume that all data comes
 #' from the same cluster.
 #'
@@ -41,17 +41,17 @@
 computeRegionEntropy <- function(voxel_df, data_df = NULL) {
 
   if (!is.null(data_df)) {
-  combine_df <- cbind(voxel_df, data_df[, 4:6]) %>% tibble()
+  combine_df <- cbind(voxel_df, data_df[c("U1", "U2", "cluster")]) %>% tibble() # extracting the UMAP coordinates and cluster labels, then appending to voxel_df
   result <- combine_df %>%
     mutate_at(vars("cluster"), factor) %>%
     group_by(pid, cluster) %>%
     mutate(nvox = n()) %>%
     ungroup() %>%
-    mutate(avg_vox = mean(nvox)) %>%
+    mutate(avg_vox = mean(nvox)) %>% # mutating to obtain the necessary values to compute entropy
     group_by(pid, cluster) %>%
-    summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(avg_vox[1]))))
+    summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(avg_vox[1])))) # calculating entropy
     ) %>%
-    pivot_wider(names_from = "cluster", values_from = "entropy", names_prefix = "entropy_c")
+    pivot_wider(names_from = "cluster", values_from = "entropy", names_prefix = "entropy_c") # making the final result a wide-format tibble
   }
 
 
@@ -59,7 +59,7 @@ computeRegionEntropy <- function(voxel_df, data_df = NULL) {
   result <- voxel_df %>%
     group_by(pid) %>%
     mutate(nvox = n()) %>%
-    summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(nvox[1])))))
+    summarise(entropy = entropy(discretize(value, numBins = floor(sqrt(nvox[1]))))) # we can directly compute the entropy without taking into consideration clusters
   }
 
   return(result)
