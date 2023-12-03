@@ -50,11 +50,11 @@ computeFeatures <- function(voxel_df,
                             epsilon = 0.05,
                             alpha = 0.05,
                             data_df = NULL) {
-  i <- 1
+  i <- 1 # set up index so we can kill the if statement after the first iteration
   for (fun in methods) {
     if (i == 1) {
       if (fun == "computeRegionProp") {
-        df <- eval(parse(text = paste(fun,
+        df <- eval(parse(text = paste(fun, # parsing the text explicitly to match the function's arguments
                                       "(voxel_df",
                                       ",",
                                       as.character(base),
@@ -62,28 +62,28 @@ computeFeatures <- function(voxel_df,
                                       as.character(epsilon),
                                       ",",
                                       "data_df)")))
-        feat_df <- df
+        feat_df <- df # initializing a feature data frame as the output of the eval() function
         i <- i + 1
       }
       else if (fun == "computeTailMeans") {
-        df <- eval(parse(text = paste(fun,
+        df <- eval(parse(text = paste(fun, # parsing the text explicitly to match the function's arguments
                                       "(voxel_df",
                                       ",",
                                       as.character(alpha),
                                       ",",
                                       "data_df)")))
-        feat_df <- df
+        feat_df <- df # initializing a feature data frame as the output of the eval() function
         i <- i + 1
       }
       else{
         df <- eval(parse(text = paste(fun, "(voxel_df, data_df)")))
-        feat_df <- df
+        feat_df <- df # initializing a feature data frame as the output of the eval() function
         i <- i + 1
       }
     }
     else {
       if (fun == "computeRegionProp") {
-        df <- eval(parse(text = paste(fun,
+        df <- eval(parse(text = paste(fun, # parsing the text explicitly to match the function's arguments
                                       "(voxel_df",
                                       ",",
                                       as.character(base),
@@ -91,23 +91,23 @@ computeFeatures <- function(voxel_df,
                                       as.character(epsilon),
                                       ",",
                                       "data_df)")))
-        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
-        feat_df <- cbind(feat_df, desired_columns)
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")] # extracting desired columns
+        feat_df <- cbind(feat_df, desired_columns) # appending extracted columns to the tibble given by i = 1
       }
       else if (fun == "computeTailMeans") {
-        df <- eval(parse(text = paste(fun,
+        df <- eval(parse(text = paste(fun, # parsing the text explicitly to match the function's arguments
                                       "(voxel_df",
                                       ",",
                                       as.character(alpha),
                                       ",",
                                       "data_df)")))
-        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
-        feat_df <- cbind(feat_df, desired_columns)
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")] # extracting desired columns
+        feat_df <- cbind(feat_df, desired_columns) # appending extracted columns to the tibble given by i = 1
       }
       else{
         df <- eval(parse(text = paste(fun, "(voxel_df, data_df)")))
-        desired_columns <- df[, !names(df) %in% c("pid", "cluster")]
-        feat_df <- cbind(feat_df, desired_columns)
+        desired_columns <- df[, !names(df) %in% c("pid", "cluster")] # extracting desired columns
+        feat_df <- cbind(feat_df, desired_columns) # appending extracted columns to the tibble given by i = 1
       }
     }
   }
