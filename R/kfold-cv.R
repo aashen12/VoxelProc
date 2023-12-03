@@ -43,7 +43,6 @@ crossValidation <- function(clinical_data,
     cindex_list <- list()
     for (j in 1:n) {
       cvector <- rep(NA, k)
-      sd <- rep(NA, k)
       lower <- rep(NA, k)
       upper <- rep(NA, k)
       for (i in 1:k) {
@@ -66,16 +65,13 @@ crossValidation <- function(clinical_data,
         test_pred <- predict(cvfit, test_covariates, s = lambda)
         concordance <- concordance.index(test_pred, test$time, test$status)
         cindex <- concordance$c.index
-        sdindex <- concordance$se
         lowerindex <- concordance$lower
         upperindex <- concordance$upper
         cvector[i] <- cindex
-        sd[i] <- sdindex
         lower[i] <- lowerindex
         upper[i] <- upperindex
       }
       clist <- list(c.indices = cvector,
-                    sd.indices = sdindex,
                     lowers = lowerindex,
                     uppers = upperindex,
                     sd = sd(cvector),
@@ -93,7 +89,6 @@ crossValidation <- function(clinical_data,
     cindex_list <- list()
     for (j in 1:n) {
       cvector <- rep(NA, k)
-      sd <- rep(NA, k)
       lower <- rep(NA, k)
       upper <- rep(NA, k)
       for (i in 1:k) {
@@ -116,16 +111,13 @@ crossValidation <- function(clinical_data,
         test_pred <- predict(cvfit, test_covariates, s = lambda)
         concordance <- concordance.index(test_pred, test$time, test$status)
         cindex <- concordance$c.index
-        sdindex <- concordance$se
         lowerindex <- concordance$lower
         upperindex <- concordance$upper
         cvector[i] <- cindex
-        sd[i] <- sdindex
         lower[i] <- lowerindex
         upper[i] <- upperindex
       }
       clist <- list(c.indices = cvector,
-                    sd.indices = sdindex,
                     lowers = lowerindex,
                     uppers = upperindex,
                     sd = sd(cvector),
