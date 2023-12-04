@@ -22,7 +22,7 @@ which we are calculating the proportion of MRI voxel values.}
 \item{data_df}{A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 This tibble should be in the following format: the first three columns are
 assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
-UMAP coordinates, and the fifth column contains cluster labels. If this is
+UMAP coordinates, and the sixth column contains cluster labels. If this is
 equal to \code{NULL}, \code{computeRegionProp()} will assume that all data comes
 from the same cluster.}
 }

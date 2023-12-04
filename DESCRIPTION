@@ -27,7 +27,8 @@ Imports:
   survival,
   survcomp,
   glmnet,
-  fastDummies
+  fastDummies,
+  purrr
 Suggests:
     testthat (>= 3.0.0),
     tidyverse

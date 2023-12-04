@@ -4,6 +4,7 @@
 #' @import survcomp
 #' @import glmnet
 #' @import fastDummies
+#' @import purrr
 
 crossValidation <- function(clinical_data,
                             k = 5,
@@ -35,7 +36,15 @@ crossValidation <- function(clinical_data,
                    sd = sd(scores))
   }
   else if (method == "lasso") {
-    df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    has_character_column <- df %>%
+      select_if(is.character) %>%
+      map_lgl(~ any(!is.na(.)))
+    if (any(has_character_column)) {
+      df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    }
+    else {
+      df <- df
+    }
     status_time_col <- df[c("time", "status")]
     rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
     scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
@@ -50,7 +59,9 @@ crossValidation <- function(clinical_data,
                                        p = proportion,
                                        list = FALSE)
         train <- scale_data_full[inTrain, ]
+        train[is.na(train)] <- 0
         test <- scale_data_full[-inTrain, ]
+        test[is.na(test)] <- 0
         test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
         train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
         time <- train["time"][[1]]
@@ -81,7 +92,15 @@ crossValidation <- function(clinical_data,
     result <- cindex_list
   }
   else if (method == "ridge") {
-    df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    has_character_column <- df %>%
+      select_if(is.character) %>%
+      map_lgl(~ any(!is.na(.)))
+    if (any(has_character_column)) {
+      df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    }
+    else {
+      df <- df
+    }
     status_time_col <- df[c("time", "status")]
     rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
     scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
@@ -96,7 +115,9 @@ crossValidation <- function(clinical_data,
                                        p = proportion,
                                        list = FALSE)
         train <- scale_data_full[inTrain, ]
+        train[is.na(train)] <- 0
         test <- scale_data_full[-inTrain, ]
+        test[is.na(test)] <- 0
         test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
         train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
         time <- train["time"][[1]]
