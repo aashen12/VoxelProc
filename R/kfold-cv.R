@@ -55,7 +55,7 @@ crossValidation <- function(clinical_data,
       lower <- rep(NA, k)
       upper <- rep(NA, k)
       for (i in 1:k) {
-        inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
+        inTrain <- createDataPartition(y = df$time, # figure out how to create actual partitions
                                        p = proportion,
                                        list = FALSE)
         train <- scale_data_full[inTrain, ]
@@ -83,8 +83,8 @@ crossValidation <- function(clinical_data,
         upper[i] <- upperindex
       }
       clist <- list(c.indices = cvector,
-                    lowers = lowerindex,
-                    uppers = upperindex,
+                    lowers = lower,
+                    uppers = upper,
                     sd = sd(cvector),
                     mean = mean(cvector))
       cindex_list[[j]] <- clist
@@ -139,8 +139,8 @@ crossValidation <- function(clinical_data,
         upper[i] <- upperindex
       }
       clist <- list(c.indices = cvector,
-                    lowers = lowerindex,
-                    uppers = upperindex,
+                    lowers = lower,
+                    uppers = upper,
                     sd = sd(cvector),
                     mean = mean(cvector))
       cindex_list[[j]] <- clist
