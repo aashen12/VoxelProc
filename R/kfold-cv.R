@@ -11,12 +11,23 @@ crossValidation <- function(clinical_data,
                             n = 5,
                             method = "coxph",
                             id = "PatID") {
-  df <- clinical_data[, !names(clinical_data) %in% id]
+  df <- clinical_data[, !names(clinical_data) %in% id] %>% na.omit()
   proportion <- 1-1/k
   if (method == "coxph") {
-    scores <- rep(NA, n)
+    has_character_column <- df %>%
+      select_if(is.character) %>%
+      map_lgl(~ any(!is.na(.)))
+    if (any(has_character_column)) {
+      df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+    }
+    else {
+      df <- df
+    }
+    cindex_list <- list()
     for (j in 1:n) {
       cvector <- rep(NA, k)
+      lower <- rep(NA, k)
+      upper <- rep(NA, k)
       for (i in 1:k) {
         inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
                                       p = proportion,
@@ -25,15 +36,22 @@ crossValidation <- function(clinical_data,
         test <- df[-inTrain, ]
         coxph_model <- coxph(Surv(time, status) ~., data = train)
         test_pred <- coxph_model %>% predict(test)
-        cindex <- concordance.index(test_pred, test$time, test$status)$c.index
+        concordance <- concordance.index(test_pred, test$time, test$status)
+        cindex <- concordance$c.index
+        lowerindex <- concordance$lower
+        upperindex <- concordance$upper
         cvector[i] <- cindex
+        lower[i] <- lowerindex
+        upper[i] <- upperindex
       }
-      score <- mean(cvector)
-      scores[j] <- score
+      clist <- list(c.indices = cvector,
+                    lowers = lower,
+                    uppers = upper,
+                    sd = sd(cvector),
+                    mean = mean(cvector))
+      cindex_list[[j]] <- clist
     }
-    result <- list(scores = scores,
-                   mean = mean(scores),
-                   sd = sd(scores))
+    result <- cindex_list
   }
   else if (method == "lasso") {
     has_character_column <- df %>%
@@ -115,9 +133,7 @@ crossValidation <- function(clinical_data,
                                        p = proportion,
                                        list = FALSE)
         train <- scale_data_full[inTrain, ]
-        train[is.na(train)] <- 0
         test <- scale_data_full[-inTrain, ]
-        test[is.na(test)] <- 0
         test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
         train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
         time <- train["time"][[1]]
