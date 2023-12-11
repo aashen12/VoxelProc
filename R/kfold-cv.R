@@ -15,6 +15,10 @@ crossValidation <- function(clinical_data,
     stop("method must either be coxph, lasso, or ridge")
   }
   else{
+    num_rows_with_na <- as.character(sum(apply(is.na(clinical_data), 1, any)))
+    num_rows <- as.character(nrow(clinical_data))
+    message <- paste0("Removed ", num_rows_with_na, " out of ", num_rows, " rows.")
+    message(message)
     df <- clinical_data[, !names(clinical_data) %in% id] %>% na.omit()
     proportion <- 1-1/k
     if (method == "coxph") {
