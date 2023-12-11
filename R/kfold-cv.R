@@ -5,6 +5,7 @@
 #' @import glmnet
 #' @import fastDummies
 #' @import purrr
+#' @export
 
 crossValidation <- function(clinical_data,
                             k = 5,
