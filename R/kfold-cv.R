@@ -34,7 +34,6 @@
 #' \item{sd}{The standard deviation of c.indices}
 #' \item{mean}{The mean of c.indices}
 #' }
-#' @export
 #'
 #' @import ISLR
 #' @import caret
