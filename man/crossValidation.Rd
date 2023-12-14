@@ -36,7 +36,7 @@ list with the following components:
 }
 \description{
 A cross validation procedure with a set amount of repeats towards
-the goal of optimizing cox propoertional hazards models, lasso models, and ridge
+the goal of optimizing cox proportional hazards models, lasso models, and ridge
 models in the context of features from clinical data.
 }
 \details{
