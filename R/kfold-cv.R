@@ -1,3 +1,41 @@
+#' @title Cross Validation
+#'
+#' @description A cross validation procedure with a set amount of repeats towards
+#' the goal of optimizing cox propoertional hazards models, lasso models, and ridge
+#' models in the context of features from clinical data.
+#'
+#' @param clinical_data A long-format \code{data.frame} or \code{tibble} that has
+#' features represented by columns. The function additionally assumes the existence
+#' of a patient ID column, marked by the \code{id} argument in \code{crossValidation()}.
+#' @param k The number of folds in the k-fold cross validation procedure
+#' @param n The number of repeats of the k-fold cross validation procedure
+#' @param method A \code{character} indicating which method will be used in the
+#' cross validation procedure. The default is set to 'coxph', indicating the
+#' cox proportional hazards model. The other available options are ridge and lasso
+#' regression.
+#' @param id A \code{character} indicating the name of the patient ID column. The
+#' default is assumed to be 'PatID'.
+#'
+#' @details \code{crossValidation()} runs k-fold cross validation using the specified
+#' model from the argument \code{method} on the clinical data that is provided. In
+#' particular, for each repeat, the function splits the data into k folds. The model
+#' is first fit according to the data in a single fold, and is then tested against the
+#' remaining k-1 folds. The function uses concordance index as a measure of error between
+#' the predicted and actual time-status pairs. We then repeat this process k-1 more times
+#' for each of the other folds, and then repeat this overall process n-1 more times for
+#' each repeat.
+#'
+#' @return A list with n elements, one for each repeat. Each element is another
+#' list with the following components:
+#' \describe{
+#' \item{c.indices}{A collection of k concordance indices from that particular repeat}
+#' \item{lowers}{A collection of lower bounds on the confidence intervals for the concordance indices}
+#' \item{uppers}{A collection of upper bounds on the confidence intervals for the concordance indices}
+#' \item{sd}{The standard deviation of c.indices}
+#' \item{mean}{The mean of c.indices}
+#' }
+#' @export
+#'
 #' @import ISLR
 #' @import caret
 #' @import survival
@@ -59,6 +97,7 @@ crossValidation <- function(clinical_data,
                       sd = sd(cvector),
                       mean = mean(cvector))
         cindex_list[[j]] <- clist
+        message(paste0("Repeat ", j, " completed"))
       }
       result <- cindex_list
     }
@@ -97,7 +136,7 @@ crossValidation <- function(clinical_data,
                             alpha = 1,
                             family = "cox",
                             type.measure = "C")
-          lambda <- cvfit$lambda.min
+          lambda <- cvfit$lambda.1se
           test_pred <- predict(cvfit, test_covariates, s = lambda)
           concordance <- concordance.index(test_pred, test$time, test$status)
           cindex <- concordance$c.index
@@ -113,6 +152,7 @@ crossValidation <- function(clinical_data,
                       sd = sd(cvector),
                       mean = mean(cvector))
         cindex_list[[j]] <- clist
+        message(paste0("Repeat ", j, " completed"))
       }
       result <- cindex_list
     }
@@ -167,6 +207,7 @@ crossValidation <- function(clinical_data,
                       sd = sd(cvector),
                       mean = mean(cvector))
         cindex_list[[j]] <- clist
+        message(paste0("Repeat ", j, " completed"))
       }
       result <- cindex_list
     }
