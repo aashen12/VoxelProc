@@ -42,6 +42,7 @@
 #' @import glmnet
 #' @import fastDummies
 #' @import purrr
+#'
 #' @export
 
 crossValidation <- function(clinical_data,
@@ -49,8 +50,8 @@ crossValidation <- function(clinical_data,
                             n = 5,
                             method = "coxph",
                             id = "PatID") {
-  if (method != "coxph" & method != "lasso" & method != "ridge") {
-    stop("method must either be coxph, lasso, or ridge")
+  if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rfsrc") {
+    stop("method must either be coxph, lasso, ridge, or rfsrc.")
   }
   else{
     num_rows_with_na <- as.character(sum(apply(is.na(clinical_data), 1, any)))
@@ -193,6 +194,48 @@ crossValidation <- function(clinical_data,
           lambda <- cvfit$lambda.min
           test_pred <- predict(cvfit, test_covariates, s = lambda)
           concordance <- concordance.index(test_pred, test$time, test$status)
+          cindex <- concordance$c.index
+          lowerindex <- concordance$lower
+          upperindex <- concordance$upper
+          cvector[i] <- cindex
+          lower[i] <- lowerindex
+          upper[i] <- upperindex
+        }
+        clist <- list(c.indices = cvector,
+                      lowers = lower,
+                      uppers = upper,
+                      sd = sd(cvector),
+                      mean = mean(cvector))
+        cindex_list[[j]] <- clist
+        message(paste0("Repeat ", j, " completed"))
+      }
+      result <- cindex_list
+    }
+    else if (method == "rfsrc") {
+      has_character_column <- df %>%
+        select_if(is.character) %>%
+        map_lgl(~ any(!is.na(.)))
+      if (any(has_character_column)) {
+        df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+      }
+      else {
+        df <- df
+      }
+      cindex_list <- list()
+      for (j in 1:n) {
+        cvector <- rep(NA, k)
+        lower <- rep(NA, k)
+        upper <- rep(NA, k)
+        for (i in 1:k) {
+          inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
+                                         p = proportion,
+                                         list = FALSE)
+          train <- df[inTrain, ]
+          test <- df[-inTrain, ]
+          rfsrc_model <- rfsrc(Surv(time, status) ~., data = train)
+          test_pred <- rfsrc_model %>% predict(test)
+          predicted_values <- test_pred$predicted[,1]
+          concordance <- concordance.index(predicted_values, test$time, test$status)
           cindex <- concordance$c.index
           lowerindex <- concordance$lower
           upperindex <- concordance$upper
