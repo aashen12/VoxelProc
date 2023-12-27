@@ -42,6 +42,7 @@
 #' @import glmnet
 #' @import fastDummies
 #' @import purrr
+#' @import randomForestSRC
 #'
 #' @export
 

@@ -28,7 +28,8 @@ Imports:
   survcomp,
   glmnet,
   fastDummies,
-  purrr
+  purrr,
+  randomForestSRC
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
