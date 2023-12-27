@@ -50,7 +50,7 @@ crossValidation <- function(clinical_data,
                             n = 5,
                             method = "coxph",
                             id = "PatID") {
-  if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rfsrc") {
+  if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rf") {
     stop("method must either be coxph, lasso, ridge, or rfsrc.")
   }
   else{
@@ -211,7 +211,7 @@ crossValidation <- function(clinical_data,
       }
       result <- cindex_list
     }
-    else if (method == "rfsrc") {
+    else if (method == "rf") {
       has_character_column <- df %>%
         select_if(is.character) %>%
         map_lgl(~ any(!is.na(.)))
