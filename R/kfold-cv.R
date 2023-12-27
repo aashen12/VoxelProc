@@ -221,6 +221,7 @@ crossValidation <- function(clinical_data,
       else {
         df <- df
       }
+      df$status <- as.numeric(as.factor(as.character(df$status))) - 1
       cindex_list <- list()
       for (j in 1:n) {
         cvector <- rep(NA, k)
@@ -232,9 +233,10 @@ crossValidation <- function(clinical_data,
                                          list = FALSE)
           train <- df[inTrain, ]
           test <- df[-inTrain, ]
+          test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.data.frame()
           rfsrc_model <- rfsrc(Surv(time, status) ~., data = train)
-          test_pred <- rfsrc_model %>% predict(test)
-          predicted_values <- test_pred$predicted[,1]
+          test_pred <- predict(rfsrc_model, test_covariates)
+          predicted_values <- test_pred$predicted
           concordance <- concordance.index(predicted_values, test$time, test$status)
           cindex <- concordance$c.index
           lowerindex <- concordance$lower
