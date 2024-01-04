@@ -70,18 +70,20 @@ crossValidation <- function(clinical_data,
       }
       else {
         df <- df
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
       cindex_list <- list()
       for (j in 1:n) {
         cvector <- rep(NA, k)
         lower <- rep(NA, k)
         upper <- rep(NA, k)
+        folds <- createFolds(newdf$indicator, k = k)
         for (i in 1:k) {
-          inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
-                                        p = proportion,
-                                        list = FALSE)
-          train <- df[inTrain, ]
-          test <- df[-inTrain, ]
+          newtrain <- newdf[-folds[[i]], ]
+          newtest <- newdf[folds[[i]], ]
+          train <- newtrain[, -which(names(newtrain) == "indicator")]
+          test <- newtest[, -which(names(newtest) == "indicator")]
           coxph_model <- coxph(Surv(time, status) ~., data = train)
           test_pred <- coxph_model %>% predict(test)
           concordance <- concordance.index(test_pred, test$time, test$status)
@@ -111,9 +113,11 @@ crossValidation <- function(clinical_data,
       }
       else {
         df <- df
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
-      status_time_col <- df[c("time", "status")]
-      rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
+      status_time_col <- newdf[c("time", "status")]
+      rest_of_df <- newdf[, -which(names(newdf) %in% c("status", "time"))]
       scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
       scale_data_full <- cbind(scale_data, status_time_col)
       cindex_list <- list()
@@ -121,12 +125,12 @@ crossValidation <- function(clinical_data,
         cvector <- rep(NA, k)
         lower <- rep(NA, k)
         upper <- rep(NA, k)
+        folds <- createFolds(scale_data_full$indicator, k = k)
         for (i in 1:k) {
-          inTrain <- createDataPartition(y = df$time, # figure out how to create actual partitions
-                                        p = proportion,
-                                        list = FALSE)
-          train <- scale_data_full[inTrain, ]
-          test <- scale_data_full[-inTrain, ]
+          newtrain <- scale_data_full[-folds[[i]], ]
+          newtest <- scale_data_full[folds[[i]], ]
+          train <- newtrain[, -which(names(newtrain) == "indicator")]
+          test <- newtest[, -which(names(newtest) == "indicator")]
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
           train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
           time <- train["time"][[1]]
@@ -166,9 +170,11 @@ crossValidation <- function(clinical_data,
       }
       else {
         df <- df
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
-      status_time_col <- df[c("time", "status")]
-      rest_of_df <- df[, -which(names(df) %in% c("status", "time"))]
+      status_time_col <- newdf[c("time", "status")]
+      rest_of_df <- newdf[, -which(names(newdf) %in% c("status", "time"))]
       scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
       scale_data_full <- cbind(scale_data, status_time_col)
       cindex_list <- list()
@@ -176,12 +182,12 @@ crossValidation <- function(clinical_data,
         cvector <- rep(NA, k)
         lower <- rep(NA, k)
         upper <- rep(NA, k)
+        folds <- createFolds(scale_data_full$indicator, k = k)
         for (i in 1:k) {
-          inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
-                                        p = proportion,
-                                        list = FALSE)
-          train <- scale_data_full[inTrain, ]
-          test <- scale_data_full[-inTrain, ]
+          newtrain <- scale_data_full[-folds[[i]], ]
+          newtest <- scale_data_full[folds[[i]], ]
+          train <- newtrain[, -which(names(newtrain) == "indicator")]
+          test <- newtest[, -which(names(newtest) == "indicator")]
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
           train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
           time <- train["time"][[1]]
@@ -221,19 +227,21 @@ crossValidation <- function(clinical_data,
       }
       else {
         df <- df
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
-      df$status <- as.numeric(as.factor(as.character(df$status))) - 1
+      newdf$status <- as.numeric(as.factor(as.character(newdf$status))) - 1
       cindex_list <- list()
       for (j in 1:n) {
         cvector <- rep(NA, k)
         lower <- rep(NA, k)
         upper <- rep(NA, k)
+        folds <- createFolds(newdf$indicator, k = k)
         for (i in 1:k) {
-          inTrain <- createDataPartition(y = df$time, #figure out how to create actual partitions
-                                         p = proportion,
-                                         list = FALSE)
-          train <- df[inTrain, ]
-          test <- df[-inTrain, ]
+          newtrain <- newdf[-folds[[i]], ]
+          newtest <- newdf[folds[[i]], ]
+          train <- newtrain[, -which(names(newtrain) == "indicator")]
+          test <- newtest[, -which(names(newtest) == "indicator")]
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.data.frame()
           rfsrc_model <- rfsrc(Surv(time, status) ~., data = train)
           test_pred <- predict(rfsrc_model, test_covariates)
