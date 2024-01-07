@@ -50,7 +50,8 @@ crossValidation <- function(clinical_data,
                             k = 5,
                             n = 5,
                             method = "coxph",
-                            id = "PatID") {
+                            id = "PatID",
+                            demo = FALSE) {
   if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rf") {
     stop("method must either be coxph, lasso, ridge, or rfsrc.")
   }
@@ -79,6 +80,9 @@ crossValidation <- function(clinical_data,
         lower <- rep(NA, k)
         upper <- rep(NA, k)
         folds <- createFolds(newdf$indicator, k = k)
+        if (demo == TRUE){
+          print(folds)
+        }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
           newtest <- newdf[folds[[i]], ]
@@ -126,6 +130,9 @@ crossValidation <- function(clinical_data,
         lower <- rep(NA, k)
         upper <- rep(NA, k)
         folds <- createFolds(scale_data_full$indicator, k = k)
+        if (demo == TRUE){
+          print(folds)
+        }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
           newtest <- scale_data_full[folds[[i]], ]
@@ -183,6 +190,9 @@ crossValidation <- function(clinical_data,
         lower <- rep(NA, k)
         upper <- rep(NA, k)
         folds <- createFolds(scale_data_full$indicator, k = k)
+        if (demo == TRUE){
+          print(folds)
+        }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
           newtest <- scale_data_full[folds[[i]], ]
@@ -237,6 +247,9 @@ crossValidation <- function(clinical_data,
         lower <- rep(NA, k)
         upper <- rep(NA, k)
         folds <- createFolds(newdf$indicator, k = k)
+        if (demo == TRUE){
+          print(folds)
+        }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
           newtest <- newdf[folds[[i]], ]
