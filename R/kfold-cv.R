@@ -81,7 +81,12 @@ crossValidation <- function(clinical_data,
         upper <- rep(NA, k)
         folds <- createFolds(newdf$indicator, k = k)
         if (demo == TRUE){
-          print(folds)
+          if (all(sort(unlist(folds)) == c(1:nrow(newdf)))) {
+            message("Folds are disjoint.")
+          }
+          else {
+            stop("Folds are not disjoint.")
+          }
         }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
@@ -131,7 +136,12 @@ crossValidation <- function(clinical_data,
         upper <- rep(NA, k)
         folds <- createFolds(scale_data_full$indicator, k = k)
         if (demo == TRUE){
-          print(folds)
+          if (all(sort(unlist(folds)) == c(1:nrow(newdf)))) {
+            message("Folds are disjoint.")
+          }
+          else {
+            stop("Folds are not disjoint.")
+          }
         }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
@@ -191,7 +201,12 @@ crossValidation <- function(clinical_data,
         upper <- rep(NA, k)
         folds <- createFolds(scale_data_full$indicator, k = k)
         if (demo == TRUE){
-          print(folds)
+          if (all(sort(unlist(folds)) == c(1:nrow(newdf)))) {
+            message("Folds are disjoint.")
+          }
+          else {
+            stop("Folds are not disjoint.")
+          }
         }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
@@ -248,7 +263,12 @@ crossValidation <- function(clinical_data,
         upper <- rep(NA, k)
         folds <- createFolds(newdf$indicator, k = k)
         if (demo == TRUE){
-          print(folds)
+          if (all(sort(unlist(folds)) == c(1:nrow(newdf)))) {
+            message("Folds are disjoint.")
+          }
+          else {
+            stop("Folds are not disjoint.")
+          }
         }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
