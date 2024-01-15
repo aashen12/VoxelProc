@@ -15,6 +15,9 @@
 #' regression.
 #' @param id A \code{character} indicating the name of the patient ID column. The
 #' default is assumed to be 'PatID'.
+#' @param demo A \code{logical} that indicates whether or not \code{crossValidation()}
+#' should print out a statement indicating whether each repeat uses disjoint intervals.
+#' Included solely for debugging purposes.
 #'
 #' @details \code{crossValidation()} runs k-fold cross validation using the specified
 #' model from the argument \code{method} on the clinical data that is provided. In

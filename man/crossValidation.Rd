@@ -4,7 +4,14 @@
 \alias{crossValidation}
 \title{Cross Validation}
 \usage{
-crossValidation(clinical_data, k = 5, n = 5, method = "coxph", id = "PatID")
+crossValidation(
+  clinical_data,
+  k = 5,
+  n = 5,
+  method = "coxph",
+  id = "PatID",
+  demo = FALSE
+)
 }
 \arguments{
 \item{clinical_data}{A long-format \code{data.frame} or \code{tibble} that has
@@ -22,6 +29,10 @@ regression.}
 
 \item{id}{A \code{character} indicating the name of the patient ID column. The
 default is assumed to be 'PatID'.}
+
+\item{demo}{A \code{logical} that indicates whether or not \code{crossValidation()}
+should print out a statement indicating whether each repeat uses disjoint intervals.
+Included solely for debugging purposes.}
 }
 \value{
 A list with n elements, one for each repeat. Each element is another
