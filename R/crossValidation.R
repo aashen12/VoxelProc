@@ -95,6 +95,9 @@ crossValidation <- function(clinical_data,
         }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
+
+          ## feature selection
+
           newtest <- newdf[folds[[i]], ]
           train <- newtrain[, -which(names(newtrain) == "indicator")]
           test <- newtest[, -which(names(newtest) == "indicator")]
