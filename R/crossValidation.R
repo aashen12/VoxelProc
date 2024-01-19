@@ -56,7 +56,7 @@ crossValidation <- function(clinical_data,
                             id = "PatID",
                             demo = FALSE) {
   if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rf") {
-    stop("method must either be coxph, lasso, ridge, or rfsrc.")
+    stop("method must either be coxph, lasso, ridge, or rf.")
   }
   else{
     num_rows_with_na <- as.character(sum(apply(is.na(clinical_data), 1, any)))
@@ -71,6 +71,8 @@ crossValidation <- function(clinical_data,
         map_lgl(~ any(!is.na(.)))
       if (any(has_character_column)) {
         df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
       else {
         df <- df
@@ -122,6 +124,8 @@ crossValidation <- function(clinical_data,
         map_lgl(~ any(!is.na(.)))
       if (any(has_character_column)) {
         df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
       else {
         df <- df
@@ -187,6 +191,8 @@ crossValidation <- function(clinical_data,
         map_lgl(~ any(!is.na(.)))
       if (any(has_character_column)) {
         df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
       else {
         df <- df
@@ -252,6 +258,8 @@ crossValidation <- function(clinical_data,
         map_lgl(~ any(!is.na(.)))
       if (any(has_character_column)) {
         df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+        indicator <- c(1:nrow(df))
+        newdf <- cbind(indicator, df)
       }
       else {
         df <- df
