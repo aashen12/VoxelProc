@@ -2,8 +2,7 @@
 #'
 #' @description A cross validation procedure with a set amount of repeats towards
 #' the goal of optimizing cox proportional hazards models, lasso models, ridge
-#' models, and survival random forest models in the context of features from
-#' clinical data.
+#' models, and random forest models in the context of survival analysis data.
 #'
 #' @param clinical_data A long-format \code{data.frame} or \code{tibble} that has
 #' features represented by columns. The function additionally assumes the existence
@@ -22,12 +21,12 @@
 #'
 #' @details \code{crossValidation()} runs k-fold cross validation using the specified
 #' model from the argument \code{method} on the clinical data that is provided. In
-#' particular, for each repeat, the function splits the data into k folds. The model
-#' is first fit according to the data in a single fold, and is then tested against the
-#' remaining k-1 folds. The function uses concordance index as a measure of error between
-#' the predicted and actual time-status pairs. We then repeat this process k-1 more times
-#' for each of the other folds, and then repeat this overall process n-1 more times for
-#' each repeat.
+#' particular, for each repeat, the function splits the data into k random folds. The model
+#' is first fit according to the data in the first k-1 folds, and is then tested against
+#' the last one. We then iterate the model over the k different folds. The function uses
+#' concordance index as a measure of error between the predicted and actual time-status pairs.
+#' We then repeat this process k-1 more times for each of the other folds, and then repeat
+#' this overall process n-1 more times for each repeat.
 #'
 #' @return A list with n elements, one for each repeat. Each element is another
 #' list with the following components:
