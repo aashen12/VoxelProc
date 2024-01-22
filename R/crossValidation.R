@@ -95,12 +95,15 @@ crossValidation <- function(clinical_data,
         }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ] # subsetting newdf by what is in the train partition
-
-          ## feature selection
-
           newtest <- newdf[folds[[i]], ] # subsetting newdf by its test partition
           train <- newtrain[, -which(names(newtrain) == "indicator")] # removing indicator column
+
+          ## feature selection (train and test both have time, status columns)
+
           test <- newtest[, -which(names(newtest) == "indicator")]
+
+          ## subset data according to selected features
+
           coxph_model <- coxph(Surv(time, status) ~., data = train) # fitting coxph model
           test_pred <- coxph_model %>% predict(test) # extracting predicted values
           concordance <- concordance.index(test_pred, test$time, test$status) # calculating concordance
@@ -155,12 +158,15 @@ crossValidation <- function(clinical_data,
         }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
-
-          ## feature selection
-
           newtest <- scale_data_full[folds[[i]], ]
           train <- newtrain[, -which(names(newtrain) == "indicator")]
+
+          ## feature selection (train and test both have time, status columns)
+
           test <- newtest[, -which(names(newtest) == "indicator")]
+
+          ## subset data according to selected features
+
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
           train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
           time <- train["time"][[1]]
@@ -225,12 +231,15 @@ crossValidation <- function(clinical_data,
         }
         for (i in 1:k) {
           newtrain <- scale_data_full[-folds[[i]], ]
-
-          ## feature selection
-
           newtest <- scale_data_full[folds[[i]], ]
           train <- newtrain[, -which(names(newtrain) == "indicator")]
+
+          ## feature selection (train and test both have time, status columns)
+
           test <- newtest[, -which(names(newtest) == "indicator")]
+
+          ## subset data according to selected features
+
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.matrix()
           train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
           time <- train["time"][[1]]
@@ -292,12 +301,15 @@ crossValidation <- function(clinical_data,
         }
         for (i in 1:k) {
           newtrain <- newdf[-folds[[i]], ]
-
-          ## feature selection
-
           newtest <- newdf[folds[[i]], ]
           train <- newtrain[, -which(names(newtrain) == "indicator")]
+
+          ## feature selection (train and test both have time, status columns)
+
           test <- newtest[, -which(names(newtest) == "indicator")]
+
+          ## subset data according to selected features
+
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.data.frame()
           rfsrc_model <- rfsrc(Surv(time, status) ~., data = train) # fitting random survival forest model
           test_pred <- predict(rfsrc_model, test_covariates) # predicting on test data
