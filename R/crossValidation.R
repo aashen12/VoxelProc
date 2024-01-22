@@ -1,8 +1,9 @@
 #' @title Cross Validation
 #'
 #' @description A cross validation procedure with a set amount of repeats towards
-#' the goal of optimizing cox proportional hazards models, lasso models, and ridge
-#' models in the context of features from clinical data.
+#' the goal of optimizing cox proportional hazards models, lasso models, ridge
+#' models, and survival random forest models in the context of features from
+#' clinical data.
 #'
 #' @param clinical_data A long-format \code{data.frame} or \code{tibble} that has
 #' features represented by columns. The function additionally assumes the existence
@@ -56,54 +57,53 @@ crossValidation <- function(clinical_data,
                             id = "PatID",
                             demo = FALSE) {
   if (method != "coxph" & method != "lasso" & method != "ridge" & method != "rf") {
-    stop("method must either be coxph, lasso, ridge, or rf.")
+    stop("method must either be coxph, lasso, ridge, or rf.") # if statement in case method is set to an unavailable option
   }
   else{
-    num_rows_with_na <- as.character(sum(apply(is.na(clinical_data), 1, any)))
+    num_rows_with_na <- as.character(sum(apply(is.na(clinical_data), 1, any))) # counting rows with NA values
     num_rows <- as.character(nrow(clinical_data))
-    message(message)
-    df <- clinical_data[, !names(clinical_data) %in% id] %>% na.omit()
+    df <- clinical_data[, !names(clinical_data) %in% id] %>% na.omit() # removing all NA values from df
     message <- paste0("Removed ", num_rows_with_na, " out of ", num_rows, " rows.")
-    proportion <- 1-1/k
+    message(message)
     if (method == "coxph") {
       has_character_column <- df %>%
-        select_if(is.character) %>%
+        select_if(is.character) %>% # checking to see if there are any character columns
         map_lgl(~ any(!is.na(.)))
       if (any(has_character_column)) {
-        df <- df %>% dummy_cols(remove_selected_columns = TRUE)
+        df <- df %>% dummy_cols(remove_selected_columns = TRUE) # dummifying character columns
         indicator <- c(1:nrow(df))
-        newdf <- cbind(indicator, df)
+        newdf <- cbind(indicator, df) # creating a new df with indicator column
       }
-      else {
+      else { # repeating the above in the case in which there are no character columns
         df <- df
         indicator <- c(1:nrow(df))
         newdf <- cbind(indicator, df)
       }
       cindex_list <- list()
       for (j in 1:n) {
-        cvector <- rep(NA, k)
+        cvector <- rep(NA, k) # initializing vectors that we will eventually collect in a list
         lower <- rep(NA, k)
         upper <- rep(NA, k)
-        folds <- createFolds(newdf$indicator, k = k)
+        folds <- createFolds(newdf$indicator, k = k) # partitioning the dataframe by its indicator columns
         if (demo == TRUE){
           if (all(sort(unlist(folds)) == c(1:nrow(newdf)))) {
-            message("Folds are disjoint.")
+            message("Folds are disjoint.") # prints a statement if all the partitions are disjoint
           }
           else {
             stop("Folds are not disjoint.")
           }
         }
         for (i in 1:k) {
-          newtrain <- newdf[-folds[[i]], ]
+          newtrain <- newdf[-folds[[i]], ] # subsetting newdf by what is in the train partition
 
           ## feature selection
 
-          newtest <- newdf[folds[[i]], ]
-          train <- newtrain[, -which(names(newtrain) == "indicator")]
+          newtest <- newdf[folds[[i]], ] # subsetting newdf by its test partition
+          train <- newtrain[, -which(names(newtrain) == "indicator")] # removing indicator column
           test <- newtest[, -which(names(newtest) == "indicator")]
-          coxph_model <- coxph(Surv(time, status) ~., data = train)
-          test_pred <- coxph_model %>% predict(test)
-          concordance <- concordance.index(test_pred, test$time, test$status)
+          coxph_model <- coxph(Surv(time, status) ~., data = train) # fitting coxph model
+          test_pred <- coxph_model %>% predict(test) # extracting predicted values
+          concordance <- concordance.index(test_pred, test$time, test$status) # calculating concordance
           cindex <- concordance$c.index
           lowerindex <- concordance$lower
           upperindex <- concordance$upper
@@ -115,11 +115,11 @@ crossValidation <- function(clinical_data,
                       lowers = lower,
                       uppers = upper,
                       sd = sd(cvector),
-                      mean = mean(cvector))
-        cindex_list[[j]] <- clist
+                      mean = mean(cvector)) # collecting all stored information in clist
+        cindex_list[[j]] <- clist # collecting all of these lists into cindex_list
         message(paste0("Repeat ", j, " completed"))
       }
-      result <- cindex_list
+      result <- cindex_list # returns result
     }
     else if (method == "lasso") {
       has_character_column <- df %>%
@@ -135,10 +135,10 @@ crossValidation <- function(clinical_data,
         indicator <- c(1:nrow(df))
         newdf <- cbind(indicator, df)
       }
-      status_time_col <- newdf[c("time", "status")]
+      status_time_col <- newdf[c("time", "status")] # extracting time, status columns
       rest_of_df <- newdf[, -which(names(newdf) %in% c("status", "time"))]
-      scale_data <- as.data.frame(scale(rest_of_df, center = TRUE))
-      scale_data_full <- cbind(scale_data, status_time_col)
+      scale_data <- as.data.frame(scale(rest_of_df, center = TRUE)) # scaling the rest of the data
+      scale_data_full <- cbind(scale_data, status_time_col) # rebinding time, status to the rescaled data
       cindex_list <- list()
       for (j in 1:n) {
         cvector <- rep(NA, k)
@@ -165,15 +165,15 @@ crossValidation <- function(clinical_data,
           train_covariates <- train[, -which(colnames(train) %in% c("status", "time"))] %>% as.matrix()
           time <- train["time"][[1]]
           status <- train["status"][[1]]
-          cvfit <- cv.glmnet(train_covariates,
+          cvfit <- cv.glmnet(train_covariates, # fitting model to train data
                             Surv(time, status),
                             nfolds = k,
                             alpha = 1,
                             family = "cox",
                             type.measure = "C")
-          lambda <- cvfit$lambda.1se
-          test_pred <- predict(cvfit, test_covariates, s = lambda)
-          concordance <- concordance.index(test_pred, test$time, test$status)
+          lambda <- cvfit$lambda.1se # extracting the 1se lambda value
+          test_pred <- predict(cvfit, test_covariates, s = lambda) # predicting on test data
+          concordance <- concordance.index(test_pred, test$time, test$status) # finding concordance index
           cindex <- concordance$c.index
           lowerindex <- concordance$lower
           upperindex <- concordance$upper
@@ -185,13 +185,13 @@ crossValidation <- function(clinical_data,
                       lowers = lower,
                       uppers = upper,
                       sd = sd(cvector),
-                      mean = mean(cvector))
-        cindex_list[[j]] <- clist
+                      mean = mean(cvector)) # collecting all values in clist
+        cindex_list[[j]] <- clist # collecting all of these lists into cindex_list
         message(paste0("Repeat ", j, " completed"))
       }
-      result <- cindex_list
+      result <- cindex_list # returns result
     }
-    else if (method == "ridge") {
+    else if (method == "ridge") { # completely analogous to lasso
       has_character_column <- df %>%
         select_if(is.character) %>%
         map_lgl(~ any(!is.na(.)))
@@ -275,7 +275,7 @@ crossValidation <- function(clinical_data,
         indicator <- c(1:nrow(df))
         newdf <- cbind(indicator, df)
       }
-      newdf$status <- as.numeric(as.factor(as.character(newdf$status))) - 1
+      newdf$status <- as.numeric(as.factor(as.character(newdf$status))) - 1 # we turn any non-zero-one status indicators into 0,1.
       cindex_list <- list()
       for (j in 1:n) {
         cvector <- rep(NA, k)
@@ -299,10 +299,10 @@ crossValidation <- function(clinical_data,
           train <- newtrain[, -which(names(newtrain) == "indicator")]
           test <- newtest[, -which(names(newtest) == "indicator")]
           test_covariates <- test[, -which(colnames(test) %in% c("status", "time"))] %>% as.data.frame()
-          rfsrc_model <- rfsrc(Surv(time, status) ~., data = train)
-          test_pred <- predict(rfsrc_model, test_covariates)
+          rfsrc_model <- rfsrc(Surv(time, status) ~., data = train) # fitting random survival forest model
+          test_pred <- predict(rfsrc_model, test_covariates) # predicting on test data
           predicted_values <- test_pred$predicted
-          concordance <- concordance.index(predicted_values, test$time, test$status)
+          concordance <- concordance.index(predicted_values, test$time, test$status) # finding concordance index
           cindex <- concordance$c.index
           lowerindex <- concordance$lower
           upperindex <- concordance$upper
@@ -314,11 +314,11 @@ crossValidation <- function(clinical_data,
                       lowers = lower,
                       uppers = upper,
                       sd = sd(cvector),
-                      mean = mean(cvector))
-        cindex_list[[j]] <- clist
+                      mean = mean(cvector)) # collecting all values in clist
+        cindex_list[[j]] <- clist # collecting all of these lists into cindex_list
         message(paste0("Repeat ", j, " completed"))
       }
-      result <- cindex_list
+      result <- cindex_list # returns result
     }
     return(result)
   }
