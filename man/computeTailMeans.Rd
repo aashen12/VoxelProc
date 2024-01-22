@@ -4,7 +4,7 @@
 \alias{computeTailMeans}
 \title{computeTailMeans()}
 \usage{
-computeTailMeans(voxel_df, data_df = NULL, alpha = 0.05)
+computeTailMeans(voxel_df, alpha = 0.05, data_df = NULL)
 }
 \arguments{
 \item{voxel_df}{A \code{dataframe} in the following format: the first column
@@ -14,15 +14,15 @@ identification. The third, fourth, and fifth columns are 'x', 'y', and 'z'
 columns. The sixth column contains the value of the voxel that corresponds
 with the given x-y-z coordinate.}
 
+\item{alpha}{A \code{double} that indicates what quantiles should be extracted
+from the patient data. The lower the number, the tighter the tail will be.}
+
 \item{data_df}{A \code{tibble} that is meant to be outputted from \code{dataDrivenClusters()}.
 This tibble should be in the following format: the first three columns are
 assumed to be 'x', 'y', and 'z' coordinates. The fourth and fifth columns are
-UMAP coordinates, and the fifth column contains cluster labels. If this is
+UMAP coordinates, and the sixth column contains cluster labels. If this is
 equal to \code{NULL}, \code{computeTailMeans()} will assume that all data comes
 from the same cluster.}
-
-\item{alpha}{A \code{double} that indicates what quantiles should be extracted
-from the patient data. The lower the number, the tighter the tail will be.}
 }
 \value{
 A tibble with the following components:

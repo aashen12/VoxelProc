@@ -4,9 +4,9 @@
 #' by resampling the voxel data set and using the adjusted Rand Index to compare
 #' cluster values.
 #'
-#' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df}
+#' @details \code{resampleClusteringRegions} randomly resamples \code{voxel_df_long}
 #' according to the arguments \code{n_resamp} and \code{subsamp_prop}. Depending
-#' on these parameters, a certain proportion of the patients in \code{voxel_df}
+#' on these parameters, a certain proportion of the patients in \code{voxel_df_long}
 #' will be chosen, and \code{dataDrivenClusters()} will be ran on these subsets.
 #' After running \code{dataDrivenClusters} on the subsets, the cluster
 #' labels will be extracted for each resample. \code{resampleClusteringRegions()}
@@ -80,8 +80,8 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
   # extract xyz coords
   xyz <- voxel_df[c("x", "y", "z")]
 
-  # run a for loop to resample and calculate clusters
-  for (i in 1:n_resamp) {
+  # run parallelized stuff
+  parloop <- foreach(i=1:n_resamp, .combine = "c") %dopar% {
 
     # sample voxel data from voxel_df
     subsamp <- voxel_df_data[, sample(ncol(voxel_df_data), size = num)]
@@ -94,14 +94,17 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
 
     # run dataDrivenClusters() with specified values
     DDC <- suppressMessages(dataDrivenClusters(new_voxel_df, n_pca = n_pca, n_umap = n_umap,
-                              n_clust = n_clust, region = region))
-    clusters <- DDC$data_df[, 6]
+                                               n_clust = n_clust, region = region))
+    clusters <- DDC$data_df["cluster"]
 
     # append to cluster_vec
     cluster_vec[, i] <- clusters
-    message(paste0("Subsample ", i, " calculated"))
   }
-  message("All subsamples calculated")
+
+  # run a fast for loop
+  for (i in 1:n_resamp){
+    cluster_vec[, i] <- parloop[i]
+  }
 
   # build matrix of ARI values
   ARI <- matrix(NA, n_resamp, n_resamp)
@@ -135,6 +138,9 @@ resampleClusteredRegions <- function(voxel_df_long, n_pca = 20,
           title = "ARI Matrix",
           subtitle = paste0("average = ", avg)) +
     theme(plot.title = element_text(face = "bold"))
+
+  remove(voxel_df_long)
+  remove(voxel_df)
 
   # appending to list
   result <- list(average = avg, matrix = plot, values = ARI)

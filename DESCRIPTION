@@ -19,7 +19,17 @@ Imports:
   reshape2,
   entropy,
   tidyr,
-  umap
+  moments,
+  rlang,
+  umap,
+  ISLR,
+  caret,
+  survival,
+  survcomp,
+  glmnet,
+  fastDummies,
+  purrr,
+  randomForestSRC
 Suggests:
     testthat (>= 3.0.0),
     tidyverse
