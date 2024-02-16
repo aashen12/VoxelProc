@@ -2,6 +2,7 @@
 
 export(computeFeatures)
 export(computeRegionEntropy)
+export(computeRegionMean)
 export(computeRegionMedian)
 export(computeRegionProp)
 export(computeRegionSkewness)
