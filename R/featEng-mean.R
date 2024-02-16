@@ -42,17 +42,17 @@ computeRegionMean <- function(voxel_df, data_df = NULL) {
     result <- combine_df %>%
       mutate_at(vars("cluster"), factor) %>%
       group_by(pid, cluster) %>%
-      summarize(median = median(value)) %>% # obtaining median according to cluster and pid
+      summarize(median = mean(value)) %>% # obtaining median according to cluster and pid
       pivot_wider(names_from = "cluster",
-                  values_from = "median",
-                  names_prefix = "median_c") # reformatting the tibble to be in wide-format
+                  values_from = "mean",
+                  names_prefix = "mean_c") # reformatting the tibble to be in wide-format
   }
 
 
   else {
     result <- voxel_df %>%
       group_by(pid) %>%
-      summarize(median = median(value)) # if data_df is not provided, we don't take into consideration the cluster labels and calculate median directly on each pid
+      summarize(median = mean(value)) # if data_df is not provided, we don't take into consideration the cluster labels and calculate median directly on each pid
   }
 
   return(result)
